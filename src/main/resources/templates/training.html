@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout/fragments :: head}">
+    </head>
+    
+    <body>
+        <!-- Cabecera -->
+        <header th:replace="~{layout/fragments :: header}">
+        </header>
+    
+        <!-- Estructura principal del cuerpo de la página -->
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Apartado a la izquierda -->
+                <aside th:replace="~{layout/fragments :: aside}">
+                </aside>
+
+            <!-- Contenido principal -->
+            <main class="col-md-9">
+                <div class="p-4">
+                    <h2>Bienvenido a mi página</h2>
+                    <p>Este es el cuerpo principal de la página. Aquí puedes añadir tu contenido principal.</p>
+
+                    <p>Crear entrenamiento</p>
+                    
+                    <form th:action="@{/app/training/create}" th:object="${training}" method="post">
+
+                        <div>
+                            <label for="date">Fecha</label>
+                            <input type="date" th:field="*{date}" id="date">
+                        </div>
+                        <div style="color:red" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+
+                        <div>
+                            <label for="trainingComment">Descripción</label>
+                            <input type="text" th:field="*{trainingComment}" id="trainingComment">
+                        </div>
+
+                        <div>
+                            <input type="submit" value="Crear">
+                        </div>
+
+                    </form>
+
+                    <a th:href="@{/app/crud}">Volver a los entrenamientos</a>
+                    
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer th:replace="~{layout/fragments :: footer}">
+
+    </footer>
+</body>
+</html>

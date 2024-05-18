@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{layout/fragments :: head}">
+    </head>
+    
+    <body>
+        <!-- Cabecera -->
+        <header th:replace="~{layout/fragments :: header}">
+        </header>
+    
+        <!-- Estructura principal del cuerpo de la página -->
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Apartado a la izquierda -->
+                <aside th:replace="~{layout/fragments :: aside}">
+                </aside>
+
+            <!-- Contenido principal -->
+            <main class="col-md-9">
+                <div class="p-4">
+                    <h2>Bienvenido a mi página</h2>
+                    <p>Este es el cuerpo principal de la página. Aquí puedes añadir tu contenido principal.</p>
+
+                    <p>Lista de entrenamientos</p>
+                    <div th:if="${trainings.isEmpty()}">
+                        <span>No hay entrenamientos aun</span>
+                    </div>
+                    <ul th:if="${!trainings.isEmpty()}" th:each="training : ${trainings}">
+                        <li>
+                            <a th:href="@{/app/training/{id}(id=${training.id})}" th:text="${training.date} + ' : ' + ${training.trainingComment}"></a>
+                            <a th:href="@{/app/training/delete/{id}(id=${training.id})}" onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar</a>
+                        </li>
+                    </ul>
+
+                    <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
+
+                    <a th:href="@{/app/training/create}">Crear nuevo entrenamiento</a>
+                    
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer th:replace="~{layout/fragments :: footer}">
+
+    </footer>
+
+</body>
+</html>
