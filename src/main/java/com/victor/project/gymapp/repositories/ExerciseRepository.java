@@ -2,7 +2,6 @@ package com.victor.project.gymapp.repositories;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +19,9 @@ public interface ExerciseRepository extends CrudRepository<Exercise,Long>{
          "LEFT JOIN FETCH e.gymSets " +
          "WHERE e.id = :id")
     Optional<Exercise> findByIdWithDetails(@Param("id") Long id);
+
+
+
+    @Query("SELECT e.training.season.user.username FROM Exercise e WHERE e.id = :exerciseId")
+    String findUsernameByExerciseId(@Param("exerciseId") Long exerciseId);
 }

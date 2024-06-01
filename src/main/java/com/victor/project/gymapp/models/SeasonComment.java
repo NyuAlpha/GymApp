@@ -28,7 +28,7 @@ public class SeasonComment {
     @Column(length = 255, nullable = false)
     private String comment;
 
-    @OneToOne
-    @JoinColumn(name="season_id")
-    private Season season;
+    public SeasonComment(String comment){
+        this.comment=comment;
+    }
 }

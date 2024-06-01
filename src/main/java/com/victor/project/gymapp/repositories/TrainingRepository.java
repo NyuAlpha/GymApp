@@ -29,4 +29,7 @@ public interface TrainingRepository extends JpaRepository<Training,Long>{
         "LEFT JOIN FETCH e.gymSets " +
         "WHERE t.id = :id ")
     Optional<Training> findByIdWithDetails(@Param("id") Long id);
+
+    @Query("SELECT t FROM Training t LEFT JOIN FETCH t.season s WHERE s.id = :id")
+    Page<Training> findBySeasonId(Pageable pageable, @Param("id") Long seasonId);
 }

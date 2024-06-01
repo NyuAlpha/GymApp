@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -35,9 +36,12 @@ public class Training {
     private Long id;
 
     private LocalDate date;
+
+    @Column(length = 30)
+    private String title;
     
     @OneToOne(fetch = FetchType.LAZY ,cascade = CascadeType.ALL, orphanRemoval = true)
-    private TrainingComment trainingComment;//comentario asociado al entrenamiento, debe cargar siempre
+    private TrainingComment trainingComment;//comentario asociado al entrenamiento
     
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "training" ,cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Exercise> exercises = new HashSet<>();
@@ -49,4 +53,7 @@ public class Training {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_user",nullable = false)
     private User user;
+
+
+    
 }

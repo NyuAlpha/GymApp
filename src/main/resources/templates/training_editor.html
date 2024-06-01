@@ -3,7 +3,7 @@
 <head th:replace="~{layout/fragments :: head}">
 </head>
 
-<body>
+<body >
     <!-- Cabecera -->
     <header th:replace="~{layout/fragments :: header}">
     </header>
@@ -16,72 +16,102 @@
             </aside>
 
             <!-- Contenido principal -->
-            <main class="col-md-9">
+            <main class="col-md-7 col-12">
                 <div class="p-4">
                     <h2>Editor de entrenamiento</h2>
 
                     <div class="alert  alert-success" th:if="${success}" th:text="${success}"></div>
-
-                    <p>Crear entrenamiento</p>
                     
-                    <form id="trainingForm" th:action="@{/app/training/update}" th:object="${training}" method="get">
-
+                    <form class="my-3" th:action="@{/app/training/{id}(id=${training.id})}" th:object="${training}" th:method="PUT">
                         <input type="hidden" id="id" th:field="*{id}">
-                        <div>
-                            <label for="date">Fecha</label>
-                            <input type="date" th:field="*{date}" id="date">
-                            <span id="dateError" class="error"></span>
+                        
+                        <div class="form-group row my-2">
+                            <label for="date" class="col-sm-2 col-form-label">Fecha</label>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="date" th:field="*{date}" id="date">
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+                            </div>
+                            <span class="col-sm-1 text-secondary">Requerido</span>
                         </div>
 
-                        <div>
-                            <label for="trainingComment">Descripción</label>
-                            <input type="text" th:field="*{trainingComment}" id="trainingComment">
+                        <div class="form-group row my-2">
+                            <label for="title" class="col-sm-2 col-form-label">Título</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" th:field="*{title}" id="title"></input>
+                            </div>
                         </div>
-
-                        <div>
-                            <input type="submit" value="Guardar cambios">
+                        
+                        <div class="form-group row my-2">
+                            <label for="trainingComment" class="col-sm-2 col-form-label">Descripción</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" th:field="*{trainingComment}" id="trainingComment" rows="4"></textarea>
+                            </div>
                         </div>
-
+                        
+                        <div class="form-group row my-2">
+                            <div class="col-sm-12">
+                                <button type="submit" class="btn btn-primary">
+                                    Guardar<i class=" ms-2 fa-solid fa-floppy-disk"></i>
+                                </button>
+                                <a class="btn btn-secondary" th:href="@{/app/training/list}">Volver<i class=" ms-2 fa-solid fa-rotate-left"></i></a>
+                            </div>
+                        </div>
                     </form>
                     
-                    <a th:href="@{/app/crud}">Volver a los entrenamientos</a>
 
                     <hr>
 
-                    <h3>Sección de ejercicios</h3>
+                    <h3>Ejercicios</h3>
 
-                    <ul th:if="${training.exerciseDtos !=null}">
-                        <li th:each="exercise : ${training.exerciseDtos}">
-                            <a href="#" th:onclick="'loadExercise(' + ${exercise.id} + ')'" th:text="${exercise.exerciseName}"></a>
-                            <a th:href="@{/}" onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar</a>
+                    <ul class="list-unstyled" th:if="${exerciseDtos != null}">
+                        <li th:each="exercise : ${exerciseDtos}" class="mb-2 border-bottom pb-2 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a th:href="@{/app/exercise/{id}(id=${exercise.id})}" th:text="${exercise.printGymSetFormat()}" class="text-decoration-none"></a>
+                                <a th:href="@{'/app/exercise/delete/' + ${exercise.trainingId}+ '/'+ ${exercise.id}}" onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" class="btn btn-danger btn-sm ms-2">
+                                    Eliminar<i class="ms-2 fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+                            <span class="mt-2 text-secondary" style="font-size: 12px;" th:if="${exercise.exerciseComment}" th:text="'Nota: ' + ${exercise.exerciseComment}"></span>
                         </li>
                     </ul>
+                    
                     <span th:if="${training.exerciseDtos == null}">No hay ningún ejercicio aún</span>
 
-                    <div id="exerciseContainer">
-                        <a href="#" onclick="showCreateForm()">Crea un nuevo ejercicio</a>
-                        <form id="exerciseForm" th:action="@{/app/exercise/create}" th:object="${exercise}" method="post">
+                    <div class="my-4">
+                        <form class="my-3" th:action="@{/app/exercise/create}" th:object="${exercise}" method="post">
                             <input type="hidden" name="trainingId" th:value="${trainingId}">
                             <input type="hidden" th:field="*{id}" id="exerciseId">
-                            <div>
-                                <label for="exerciseName">Nombre</label>
-                                <input type="text" th:field="*{exerciseName}" id="exerciseName">
+                            <div class="form-group row my-2">
+                                <label class="col-form-label col-sm-2" for="exerciseName">Nombre</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" th:field="*{exerciseName}" id="exerciseName" placeholder="Ej: Press de banca">
+                                </div>
                             </div>
                             <div style="color:red" th:if="${#fields.hasErrors('exerciseName')}" th:errors="*{exerciseName}"></div>
     
-                            <div>
-                                <label for="variant">Variante</label>
-                                <input type="text" th:field="*{variant}" id="variant">
+                            <div class="form-group row my-2">
+                                <label class="col-form-label col-sm-2" for="variant">Variante</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" th:field="*{variant}" id="variant" placeholder="Ej: Parada">
+                                </div>
                             </div>
                             <div style="color:red" th:if="${#fields.hasErrors('variant')}" th:errors="*{variant}"></div>
     
-                            <div>
-                                <label for="exerciseComment">comentario</label>
-                                <input type="text" th:field="*{exerciseComment}" id="exerciseComment">
+                            <div class="form-group row my-2">
+                                <label class="col-form-label col-sm-2" for="exerciseComment">comentario</label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" type="text" th:field="*{exerciseComment}" id="exerciseComment" placeholder="Comentario adicional">
+                                </div>
                             </div>
                             <div style="color:red" th:if="${#fields.hasErrors('exerciseComment')}" th:errors="*{exerciseComment}"></div>
-                            <input id="submitExerciseBtn" type="submit" value="Crear">
-                        </form>
+                            
+                            <div class="form-group row my-2">
+                                <div class="col-sm-12">
+                                    <button class="btn btn-primary" type="submit">Añadir<i class=" ms-2 fa-solid fa-plus"></i></button>
+                                </div>
+                            </div >
+
+                            </form>
                     </div>
 
 
@@ -138,52 +168,6 @@
             document.getElementById('submitExerciseBtn').value='Crear'
         }
     </script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Obtener el formulario por su ID
-        const form = document.getElementById('trainingForm');
-        
-        // Añadir un evento de envío al formulario
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevenir el comportamiento por defecto
-            
-            // Limpiar errores anteriores
-            document.querySelectorAll('.error').forEach(el => el.textContent = '');
-            
-            // Crear un objeto FormData a partir del formulario
-            const formData = new FormData(form);
-            // Convertir FormData a un objeto simple
-            const data = Object.fromEntries(formData.entries());
-            
-            try {
-                // Enviar la solicitud al servidor
-                const response = await fetch('/app/training/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data) // Convertir los datos a JSON
-                });
-
-                if (!response.ok) {
-                    // Obtener los errores de validación del servidor
-                    const errors = await response.json();
-                    for (const [field, message] of Object.entries(errors)) {
-                        // Mostrar los errores en los campos correspondientes
-                        document.getElementById(`${field}Error`).textContent = message;
-                    }
-                } else {
-                    const updatedTraining = await response.json();
-                    // Manejar la actualización exitosa, por ejemplo, mostrando un mensaje de éxito
-                    alert('Entrenamiento guardado con éxito');
-                }
-            } catch (error) {
-                console.error('Error al actualizar el entrenamiento:', error);
-            }
-        });
-    });
-</script>
 
 </body>
 </html>

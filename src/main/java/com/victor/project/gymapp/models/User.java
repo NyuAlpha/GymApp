@@ -33,7 +33,9 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+    @UniqueConstraint(columnNames = "username"),
+    @UniqueConstraint(columnNames = "email")})
 public class User {
 
     
@@ -56,8 +58,8 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;//Nombre de usuario
 
-    @Column(nullable = false, unique = true, length = 100)
-    private String email;//email del usuario
+    @Column(nullable = true, unique = true, length = 100)
+    private String email;//email del usuario, de momento no es obligatorio
 
     @Column(nullable = false, length = 255)
     private String password;//Contraseña cifrada

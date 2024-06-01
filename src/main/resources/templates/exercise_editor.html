@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head}">
+</head>
+
+<body>
+    <!-- Cabecera -->
+    <header th:replace="~{layout/fragments :: header}">
+    </header>
+
+    <!-- Estructura principal del cuerpo de la página -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Apartado a la izquierda -->
+            <aside th:replace="~{layout/fragments :: aside}">
+            </aside>
+
+            <!-- Contenido principal -->
+            <main class="col-md-9">
+                <div class="p-4">
+                    <h2>Editor de ejercicio</h2>
+
+                    <div class="alert  alert-success" th:if="${success}" th:text="${success}"></div>
+
+                    <p>Crear entrenamiento</p>
+                    
+                    <form id="trainingForm" th:action="@{/app/exercise/update}" th:object="${exercise}" method="post">
+
+                        <input type="hidden" id="id" th:field="*{id}">
+                        <div>
+                            <label for="exerciseName">Ejercicio</label>
+                            <input type="text" th:field="*{exerciseName}" id="exerciseName">
+                            <div style="color:red" th:if="${#fields.hasErrors('exerciseName')}" th:errors="*{exerciseName}"></div>
+                        </div>
+
+                        <div>
+                            <label for="variant">Variante</label>
+                            <input type="text" th:field="*{variant}" id="variant">
+                            <div style="color:red" th:if="${#fields.hasErrors('variant')}" th:errors="*{variant}"></div>
+                        </div>
+
+                        <div>   
+                            <label for="exerciseComment">Detalles</label>
+                            <input type="text" th:field="*{exerciseComment}" id="exerciseComment">
+                            <div style="color:red" th:if="${#fields.hasErrors('exerciseComment')}" th:errors="*{exerciseComment}"></div>
+                        </div>
+
+                        <div>
+                            <input type="submit" value="Guardar cambios">
+                        </div>
+
+                    </form>
+                    
+                    <a th:href="@{/app/training/{id}(id=${exercise.trainingId})}">Volver al entrenamiento</a>
+
+                    <hr>
+
+                    <h3>Sección de ejercicios</h3>
+
+                    <ul th:if="${exercise.gymSetsDtos !=null}">
+                        <li th:each="gymSet : ${exercise.gymSetsDtos}">
+                            <a th:href="@{/app/gymSet/{id}(id=${gymSet.id})}"  th:text="${gymSet.repetitions}"></a>
+                            <a th:href="@{/}" onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar</a>
+                        </li>
+                    </ul>
+                    <span th:if="${exercise.gymSetsDtos == null}">No hay ningún ejercicio aún</span>
+
+                    <div id="gymSetContainer">
+                        <div>Crea una nueva serie</div>
+                        <form id="exerciseForm" th:action="@{/app/gymSet/create}" th:object="${gymSet}" method="post">
+                            <input type="hidden" th:field="*{exerciseId}">
+                            <input type="hidden" th:field="*{id}" id="gymSetId">
+                            <div>
+                                <label for="weight">Peso</label>
+                                <input type="text" th:field="*{weight}" id="weight">
+                            </div>
+                            <div style="color:red" th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></div>
+    
+                            <div>
+                                <label for="repetitions">Repeticiones</label>
+                                <input type="text" th:field="*{repetitions}" id="repetitions">
+                            </div>
+                            <div style="color:red" th:if="${#fields.hasErrors('repetitions')}" th:errors="*{repetitions}"></div>
+    
+                            <div>
+                                <label for="failure">Fallo</label>
+                                <input type="checkbox" th:field="*{failure}" id="failure">
+                            </div>
+                            <input id="submitExerciseBtn" type="submit" value="Crear">
+                        </form>
+                    </div>
+
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer th:replace="~{layout/fragments :: footer}">
+
+    </footer>
+
+</body>
+</html>

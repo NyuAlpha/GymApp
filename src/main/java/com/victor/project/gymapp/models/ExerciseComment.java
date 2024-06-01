@@ -28,4 +28,9 @@ public class ExerciseComment {
     @Column(length = 255, nullable = false)
     private String comment;
 
+    public ExerciseComment(String comment) {
+        this.comment = comment;
+    }
+
+    
 }

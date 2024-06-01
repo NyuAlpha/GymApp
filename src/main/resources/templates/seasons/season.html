@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/fragments :: head}">
+</head>
+
+<body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
+
+
+    <header th:replace="~{layout/fragments :: header}">
+    </header>
+
+
+    <div class="flex-grow-1 d-flex">
+
+        <aside th:replace="~{layout/fragments :: aside}">
+        </aside>
+
+
+        <!-- Contenido principal -->
+        <main class="col-md-7 col-12 p-3">
+            <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+            <div class="card my-2 ">
+                <div class="card-header">
+                    <h4 th:text="'Temporada: ' + ${season.title}"></h4>
+                </div>
+                <div class="card-body">
+                    <table class="my-3 table">
+                        <thead>
+                            <tr>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="${season.startDate}"></td>
+                                <td th:if="${season.endDate}" th:text="${season.endDate}"></td>
+                                <td th:if="${season.endDate} == null" th:text="'Sin Finalizar'"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" th:if="${season.seasonComment}"
+                                    th:text="'Descripción: '+${season.seasonComment}"></td>
+                                <td colspan="2" th:if="${season.seasonComment} == null"
+                                    th:text="'Descripción: Sin descripción '"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex">
+                        <a class="btn btn-primary btn-small me-3" th:href="@{/app/season/update/} + ${season.id}">Editar
+                            <i class="ms-2 fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <div th:replace="~{layout/forms :: seasonDelete}"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="my-4">
+                <a class="btn btn-secondary" th:href="@{/app/season/list}">Volver a las temporadas<i
+                        class=" ms-2 fa-solid fa-rotate-left"></i></a>
+            </div>
+
+            <div class="my-2">
+                <h2>Entrenamientos</h2>
+                <div class="p-1" th:if="${trainings.isEmpty()}">
+                    <span>No hay entrenamientos aun:</span>
+                </div>
+                <a class="btn btn-primary btn-small my-2" th:href="@{/app/training/create}">Crear entrenamiento<i
+                        class=" ms-2 fa-solid fa-plus"></i>
+                </a>
+                <ul class="list-unstyled my-2" th:if="${!trainings.isEmpty()}" th:each="training : ${trainings}">
+                    <li class="row">
+                        <div class="col-sm-8 border-bottom">
+                            <a class="text-decoration-none" th:href="@{/app/training/{id}(id=${training.id})}"
+                                th:text="${training.date} + ' : ' + ${training.title}"></a>
+                        </div>
+                        <div class="col-sm-2">
+                            <a class="btn btn-danger btn-small " style="font-size: 11px"
+                                th:href="@{/app/training/delete/{id}(id=${training.id})}"
+                                onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar<i
+                                    class="ms-2 fa-solid fa-trash"></i></a>
+                        </div>
+                    </li>
+                </ul>
+
+                <div th:if="${!trainings.isEmpty()}">
+                    <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
+                </div>
+
+
+
+
+            </div>
+        </main>
+    </div>
+
+
+
+    <footer th:replace="~{layout/fragments :: footer}">
+
+    </footer>
+</body>
+
+</html>

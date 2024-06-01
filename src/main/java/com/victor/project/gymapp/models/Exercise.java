@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import java.util.HashSet;
 import java.util.Set;
 
+import dto.ExerciseDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,12 +35,12 @@ public class Exercise {
 
     @ManyToOne(fetch = FetchType.LAZY)//Un ejercicio puede tener un solo nombre, pero los nombres pueden estar en muchos ejercicios
     @JoinColumn(name="exercise_name_id", nullable = false)
-    private ExerciseName exerciseName;//Nombre del ejercicio, es necesario cargarlo siempre
+    private ExerciseName exerciseName;
 
     @Column(length = 30)
     private String variant;//Un ejercicio puede tener variaciones o elementos adicionales
 
-    @OneToOne(fetch = FetchType.LAZY ,cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private ExerciseComment exerciseComment;//comentario asociado a un ejercicio
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,4 +51,12 @@ public class Exercise {
     private Set<GymSet> gymSets = new HashSet<>();//Series que contiene un ejercicio
 
 
+    // public ExerciseDto toDto() {
+    //     ExerciseDto exerciseDto = new ExerciseDto();
+    //     exerciseDto.setId(id);
+    //     if (exerciseName != null)
+    //         exerciseDto.setExerciseComment(exerciseName.getName());
+    //     if (exerciseName != null)
+    //         exerciseDto.setExerciseComment(exerciseName.getName());
+    // }
 }

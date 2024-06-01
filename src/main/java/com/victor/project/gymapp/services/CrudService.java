@@ -1,25 +1,28 @@
 package com.victor.project.gymapp.services;
 
-import java.util.Optional;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import security.CustomUserDetails;
 
-import com.victor.project.gymapp.models.Exercise;
-import com.victor.project.gymapp.models.Training;
-
-import dto.ExerciseDto;
-import dto.TrainingDto;
 
 public interface CrudService {
 
-    Page<Training> findAllTrainingsWithComment(Pageable pageable);
-    Training saveTraining(TrainingDto trainingDto);
-    void deleteTraining(Long id);
-    TrainingDto getFullTrainingById(Long id);
-    Training updateTraining(TrainingDto trainingDto);
-    void saveExercise(ExerciseDto exerciseDto);
+    default String getCurrentUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
 
-    Optional<Exercise> getFullExerciseById(Long id);
+    default String getCurrentUserUuid() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal).getUuid();
+        } else {
+            throw new IllegalStateException("Principal is not an instance of CustomUserDetails");
+        }
+    }
     
 }

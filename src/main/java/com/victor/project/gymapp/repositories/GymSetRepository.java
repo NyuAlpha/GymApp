@@ -4,6 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.victor.project.gymapp.models.GymSet;
 
-public interface SetRepository extends CrudRepository<GymSet,Long>{
+public interface GymSetRepository extends CrudRepository<GymSet,Long>{
+
 
 }

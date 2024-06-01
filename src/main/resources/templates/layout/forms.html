@@ -1,0 +1,46 @@
+<div th:fragment="seasonForm">
+    <div class="form-group row my-2">
+        <label class="col-form-label col-sm-2" for="title">Título</label>
+        <div class="col-sm-8 col-xl-6">
+            <input class="form-control" type="text" th:field="*{title}" id="title" minlength="5" maxlength="30" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''">
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+        </div>
+        <span class="col-sm-1 text-secondary">Requerido</span>
+    </div>
+
+    <div class="form-group row my-2">
+        <label class="col-form-label col-sm-2" for="startDate">Inicio</label>
+        <div class="col-sm-8 col-xl-6">
+            <input class="form-control" type="date" th:field="*{startDate}" id="startDate">
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></div>
+        </div>
+        <span class="col-sm-1 text-secondary">Requerido</span>
+    </div>
+
+    <div class="form-group row my-2">
+        <label class="col-form-label col-sm-2" for="endDate">Finalización</label>
+        <div class="col-sm-8 col-xl-6">
+            <input class="form-control" type="date" th:field="*{endDate}" id="endDate">
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></div>
+        </div>
+    </div>
+
+    <div class="form-group row my-2">
+        <label class="col-form-label col-sm-2" for="seasonComment">Descripción</label>
+        <div class="col-sm-10 col-xl-8">
+            <textarea class="form-control" type="text" th:field="*{seasonComment}" id="seasonComment" rows="4" maxlength="255" th:classappend="${#fields.hasErrors('seasonComment')} ? 'is-invalid' : ''"></textarea>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('seasonComment')}" th:errors="*{seasonComment}"></div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<div th:fragment="seasonDelete">
+    <form th:action="@{/app/season/delete/} + ${season.id}" th:method="DELETE">
+        <button class="btn btn-danger btn-small " onclick="return confirm('¿Estás seguro que deseas eliminar esta temporada?')" type="submit">
+            Eliminar<i class="ms-2 fa-solid fa-trash"></i>
+        </button>
+    </form>
+</div>

@@ -28,8 +28,14 @@
                         <div>
                             <label for="date">Fecha</label>
                             <input type="date" th:field="*{date}" id="date">
+                            <span class="text-secondary">Requerido</span>
                         </div>
                         <div style="color:red" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+
+                        <div>
+                            <label for="title">Título</label>
+                            <input type="text" th:field="*{title}" id="title">
+                        </div>
 
                         <div>
                             <label for="trainingComment">Descripción</label>

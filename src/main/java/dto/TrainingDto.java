@@ -25,6 +25,8 @@ public class TrainingDto {
     @NotNull
     private LocalDate date;
 
+    private String title;
+
     private String trainingComment;//comentario asociado al entrenamiento, debe cargar siempre
 
     private Set<ExerciseDto> exerciseDtos; //Los ejercicios asociados
@@ -47,6 +49,7 @@ public class TrainingDto {
         TrainingDto trainingDto = new TrainingDto();
         trainingDto.setId(training.getId());
         trainingDto.setDate(training.getDate());
+        trainingDto.setTitle(training.getTitle());
         
         if(training.getTrainingComment() != null){
             trainingDto.setTrainingComment(training.getTrainingComment().getComment());
