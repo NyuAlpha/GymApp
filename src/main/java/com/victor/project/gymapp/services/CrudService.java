@@ -2,8 +2,7 @@ package com.victor.project.gymapp.services;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import security.CustomUserDetails;
-
+import com.victor.project.gymapp.security.CustomUserDetails;
 
 public interface CrudService {
 
@@ -24,5 +23,5 @@ public interface CrudService {
             throw new IllegalStateException("Principal is not an instance of CustomUserDetails");
         }
     }
-    
+
 }

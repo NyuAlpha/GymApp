@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -52,16 +53,17 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(length = 36)//Un uuid contiene 36 caracteres
     private String uuid;
 
     
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, unique = true, length = 30)
     private String username;//Nombre de usuario
 
-    @Column(nullable = true, unique = true, length = 100)
+    @Column(nullable = true, unique = true, length = 50)
     private String email;//email del usuario, de momento no es obligatorio
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 60)//Longitud máxima de la contraseña encriptada con BCrypt
     private String password;//Contraseña cifrada
 
     //enabled permite dar de alta o baja a un usuario
@@ -79,8 +81,8 @@ public class User {
     private Set<Role> roles = new HashSet<>();//Cada usuario puede tener muchos roles, y los roles pueden compartirse en más de un usuario
 
 
-    @OneToOne(mappedBy ="user" ,cascade = CascadeType.ALL, orphanRemoval = true)
-    private UserDetails userDetails;
+    @OneToMany(mappedBy ="user" ,cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserRecord> userRecords;
 
     @PrePersist
     private void prePersist(){

@@ -13,23 +13,16 @@ import com.victor.project.gymapp.models.Training;
 
 public interface TrainingRepository extends JpaRepository<Training,Long>{
 
-    
-    List<Training> findAllByOrderByDateAsc();
-
-    //Consigue cargar los entrenamientos con la información precisa y ordenados
-    @Query("SELECT t FROM Training t " + 
-        "LEFT JOIN FETCH t.trainingComment " +
-        "ORDER BY t.date ASC"  
-    )
-    Page<Training> findAllWithCommentByOrderByDateAsc(Pageable pageable);
-
 
     @Query("SELECT t FROM Training t " +
         "LEFT JOIN FETCH t.exercises e " +
+        "LEFT JOIN FETCH t.season " +
         "LEFT JOIN FETCH e.gymSets " +
         "WHERE t.id = :id ")
     Optional<Training> findByIdWithDetails(@Param("id") Long id);
 
+
+    //Busca todas los entrenamientos de una temporada y los pagina
     @Query("SELECT t FROM Training t LEFT JOIN FETCH t.season s WHERE s.id = :id")
     Page<Training> findBySeasonId(Pageable pageable, @Param("id") Long seasonId);
 }

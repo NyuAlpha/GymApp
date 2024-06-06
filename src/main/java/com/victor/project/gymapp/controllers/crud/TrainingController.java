@@ -6,9 +6,11 @@ import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,69 +20,64 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.victor.project.gymapp.util.paginator.PageRender;
-
-import com.victor.project.gymapp.models.Training;
+import com.victor.project.gymapp.dto.ExerciseDto;
+import com.victor.project.gymapp.dto.TrainingDto;
 import com.victor.project.gymapp.services.ITrainingService;
+import com.victor.project.gymapp.services.IUserService;
 
-import dto.ExerciseDto;
-import dto.TrainingDto;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
+import lombok.AllArgsConstructor;
 
 @Controller
-@RequestMapping(path={"/app/training"})
+@AllArgsConstructor
+@RequestMapping(path = { "/app/season/training" })
 public class TrainingController {
 
-
     private ITrainingService trainingService;
+    private IUserService userService;
 
-    public TrainingController(ITrainingService trainingService){
-        this.trainingService = trainingService;
+
+
+    // Devuelve la vista necesaria para crear un entrenamiento mediante post para no enviar la temporada en la url
+    @GetMapping(path = "/create/{seasonId}")
+    public String createTraining(Model model, @PathVariable("seasonId") Long seasonId) {
+
+        // Se comprueba si el usuario es el propietario de la temporada
+        if (!userService.checkUserForSeasonId(seasonId))
+            throw new AccessDeniedException("No tienes permiso para realizar esta acción");
+
+        TrainingDto trainingDto = new TrainingDto(LocalDate.now());
+        trainingDto.setSeasonId(seasonId);
+
+        model.addAttribute("training", trainingDto);
+        return "trainings/training_create";
     }
+
+
+
+
+
     
 
+    // Crea y guarda un entrenamiento y redirecciona a la vista del entrenamiento
+    @PostMapping(path = "/create")
+    public String processTraining(Model model, @ModelAttribute("training") @Valid TrainingDto trainingDto,
+                            BindingResult result, RedirectAttributes flash) {
 
+        // Se comprueba si el usuario es el propietario de la temporada
+        if (!userService.checkUserForSeasonId(trainingDto.getSeasonId()))
+            throw new AccessDeniedException("No tienes permiso para realizar esta acción");
+        
+        if (result.hasErrors()) 
+            return "trainings/training_create";
 
-    //Muestra la vista con la lista de entrenamiento paginada
-    @GetMapping(path="/list")
-    public String getTrainingList(Model model,@RequestParam(name="page",defaultValue = "0") int page){
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<Training> trainings = trainingService.findAllTrainingsWithComment(pageable);
-        Page<TrainingDto> trainingsDto = trainings.map(TrainingDto::getSimpleDto);
-
-        PageRender<TrainingDto> pageRender = new PageRender<>("/app/training/list", trainingsDto);
-        model.addAttribute("trainings",trainingsDto);
-        model.addAttribute("page", pageRender);
-        return "crud";
-    }
-
-    
-
-
-
-    //Devuelve la vista necesaria para crear un entrenamiento
-    @GetMapping(path="/create")
-    public String createTraining(Model model){
-
-        model.addAttribute("training", new TrainingDto(LocalDate.now()));
-        return "training";
-    }
-
-
-
-
-    //Crea y guarda un entrenamiento y redirecciona a la vista del entrenamiento
-    @PostMapping(path="/create")
-    public String processTraining(Model model, @ModelAttribute("training") @Valid TrainingDto trainingDto , BindingResult result, RedirectAttributes flash){
-
-        if(result.hasErrors()){
-            model.addAttribute("training", trainingDto);//Lo reenvia al formulario
-            return "training";
-        }
-        //Guardamos y conseguimos el id para redireccionar a el
+        // Guardamos y conseguimos el id para redireccionar a el
         Long trainingId = trainingService.saveTraining(trainingDto).getId();
         flash.addFlashAttribute("success", "Entrenamiento creado con exito");
-        return "redirect:/app/training/" + trainingId;
+
+        return "redirect:/app/season/training/"+ trainingId +"/show";
     }
 
 
@@ -88,62 +85,76 @@ public class TrainingController {
 
 
 
+    // Para ver y editar los datos de un entrenamiento concreto en la vista, sirve todos los datos, incluidos ejercicios y series.
+    @GetMapping("{trainingId}/show")
+    public String showTraining(Model model, @PathVariable("trainingId") Long trainingId) {
 
 
-    //Para ver y editar los datos de un entrenamiento concreto en la vista, sirve todos los datos, incluidos ejercicios y series.
-    @GetMapping("/{id}")
-    public String showTraining(@PathVariable("id") Long id, Model model) {
-        //Cargamos el entrenamiento si existe, si no existe se tratará el error
-        TrainingDto trainingDto = trainingService.getFullTrainingById(id);
-        //Ahora se mandan todos los datos y sus detalles a la vista
+        // Cargamos el entrenamiento si existe, si no existe se tratará el error
+        TrainingDto trainingDto = trainingService.getFullTrainingById(trainingId).getFullDto();
+        // Ahora se mandan todos los datos y sus detalles a la vista
         model.addAttribute("training", trainingDto);
-
-        //Se envian los ejercicios a la vista de forma separada
+        // Se envian los ejercicios a la vista de forma separada
         model.addAttribute("exerciseDtos", trainingDto.getExerciseDtos());
 
-        // Para rellenar el formulario de ejercicio con campos vacios
-        model.addAttribute("exercise", new ExerciseDto());
+        // Para rellenar el formulario de ejercicio con campos vacios y el id de su entrenamiento
+        ExerciseDto exerciseDto = new ExerciseDto();
+        exerciseDto.setTrainingId(trainingId);
+        model.addAttribute("exercise", exerciseDto);
 
-        // Añadir el ID de entrenamiento al modelo para que todo ejercicio lo envie de vuelta en el formulario
-        model.addAttribute("trainingId", id);
-
-        return "training_editor";
+        return "trainings/training";
     }
 
 
+    // Para ver y editar los datos de un entrenamiento concreto en la vista, sirve todos los datos, incluidos ejercicios y series.
+    @GetMapping("{trainingId}/update")
+    public String editTraining(Model model, @PathVariable("trainingId") Long trainingId) {
 
+        // Cargamos el entrenamiento si existe, si no existe se tratará el error
+        TrainingDto trainingDto = trainingService.getFullTrainingById(trainingId).getFullDto();
+        // Ahora se mandan todos los datos y sus detalles a la vista
+        model.addAttribute("training", trainingDto);
 
+        return "trainings/training_update";
+    }
 
+    @PutMapping(value = "/update")
+    public String updateTraining(Model model,@ModelAttribute("training") @Valid TrainingDto trainingDto,
+                                BindingResult result, RedirectAttributes flash) {
 
-    @PutMapping(value="/{id}")
-    public String updateTraining(Model model,@PathVariable Long id, @ModelAttribute("training") @Valid TrainingDto trainingDto , BindingResult result, RedirectAttributes flash){
-        
-        
-
-        if(result.hasErrors()){
-            //Asigna a los campos de exercise un dto vacio
+        if (result.hasErrors()) {
+            // Asigna a los campos de exercise un dto vacio
             model.addAttribute("exercise", new ExerciseDto());
-            model.addAttribute("training", trainingDto);//Lo reenvía al formulario
+            model.addAttribute("training", trainingDto);// Lo reenvía al formulario
 
-            //Cargamos los ejercicios
-            Set<ExerciseDto> exerciseDtos = trainingService.getFullTrainingById(trainingDto.getId()).getExerciseDtos();
-            //Se reenvian los ejercicios a la vista de forma separada
+            // Cargamos los ejercicios
+            Set<ExerciseDto> exerciseDtos = trainingService.getFullTrainingById(trainingDto.getId()).getFullDto().getExerciseDtos();
+            // Se reenvian los ejercicios a la vista de forma separada
             model.addAttribute("exerciseDtos", exerciseDtos);
 
-            return "training_editor";
+            return "trainings/training";
         }
-        //Guardamos y conseguimos el id para redireccionar a el
-        trainingService.updateTraining(id,trainingDto);
+        // Guardamos y conseguimos el id para redireccionar a el
+        trainingService.updateTraining(trainingDto);
         flash.addFlashAttribute("success", "Entrenamiento guardado con exito");
-        return "redirect:/app/training/" + id;
+
+        return "redirect:/app/season/training/" + trainingDto.getId() +"/show";
     }
 
 
-    
 
-    @GetMapping("/delete/{id}")
-    public String deleteTraining(@PathVariable("id") Long id){
-        trainingService.deleteTraining(id);
-        return "redirect:/app/training/list";
+
+
+
+
+
+
+
+
+    @DeleteMapping("/delete")
+    public String deleteTraining(@RequestParam("trainingId") Long trainingId, @RequestParam("seasonId") Long seasonId) {
+        trainingService.deleteTraining(trainingId);
+        return "redirect:/app/season/" + seasonId + "/show";
     }
+
 }

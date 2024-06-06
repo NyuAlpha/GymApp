@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head}">
+</head>
+
+<body >
+    <!-- Cabecera -->
+    <header th:replace="~{layout/fragments :: header}">
+    </header>
+
+    <!-- Estructura principal del cuerpo de la página -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Apartado a la izquierda -->
+            <aside th:replace="~{layout/fragments :: aside}">
+            </aside>
+
+            <!-- Contenido principal -->
+            <main class="col-md-7 col-12 p-3">
+
+                    <div class="alert  alert-success" th:if="${success}" th:text="${success}"></div>
+                    <div class="card my-2 ">
+                        <div class="card-header">
+                            <h4 th:if="${training.title}" th:text="${training.title}"></h4>
+                            <h4 th:if="${training.title.isEmpty()}" >Sin título</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="my-3 table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td th:text="${training.date}"></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" th:if="${training.trainingComment}"
+                                            th:text="'Descripción: '+${training.trainingComment}"></td>
+                                        <td colspan="2" th:if="${training.trainingComment} == null"
+                                            th:text="'Descripción: Sin descripción '"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+        
+                            <div class="d-flex">
+
+                                <a class="btn btn-primary btn-small me-3" th:href="@{/app/season/training/} + ${trainingId} + '/update'">
+                                    Editar<i class="ms-2 fa-solid fa-pen-to-square"></i>
+                                </a>
+
+                                <div th:replace="~{layout/forms :: trainingDelete}"></div>
+
+                                <a class="btn btn-secondary" th:href="@{/app/season/} + ${training.seasonId} + '/show'">
+                                    Volver a la temporada<i class=" ms-2 fa-solid fa-rotate-left"></i>
+                                </a>
+                            </div>
+                        </div>
+        
+                    </div>
+                    
+                    <div class="my-4">
+                        <h2>Ejercicios</h2>
+
+                        <ul class="list-unstyled" th:if="${exerciseDtos != null}">
+                            <li th:each="exercise : ${exerciseDtos}" class="mb-2 border-bottom pb-2 d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a th:href="@{/app/exercise/{id}(id=${exercise.id})}" th:text="${exercise.printGymSetFormat()}" class="text-decoration-none"></a>
+                                    <a th:href="@{'/app/exercise/delete/' + ${exercise.trainingId}+ '/'+ ${exercise.id}}" onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" class="btn btn-danger btn-sm ms-2">
+                                        Eliminar<i class="ms-2 fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                                <span class="mt-2 text-secondary" style="font-size: 12px;" th:if="${exercise.exerciseComment}" th:text="'Nota: ' + ${exercise.exerciseComment}"></span>
+                            </li>
+                        </ul>
+                        
+                        <span th:if="${training.exerciseDtos == null}">No hay ningún ejercicio aún</span>
+    
+                        <div class="my-4">
+                            <form class="my-3" th:action="@{/app/exercise/create}" th:object="${exercise}" method="post">
+                                <input type="hidden" name="trainingId" th:value="${trainingId}">
+                                <input type="hidden" th:field="*{id}" id="exerciseId">
+                                <div class="form-group row my-2">
+                                    <label class="col-form-label col-sm-2" for="exerciseName">Nombre</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" type="text" th:field="*{exerciseName}" id="exerciseName" placeholder="Ej: Press de banca">
+                                    </div>
+                                </div>
+                                <div style="color:red" th:if="${#fields.hasErrors('exerciseName')}" th:errors="*{exerciseName}"></div>
+        
+                                <div class="form-group row my-2">
+                                    <label class="col-form-label col-sm-2" for="variant">Variante</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" type="text" th:field="*{variant}" id="variant" placeholder="Ej: Parada">
+                                    </div>
+                                </div>
+                                <div style="color:red" th:if="${#fields.hasErrors('variant')}" th:errors="*{variant}"></div>
+        
+                                <div class="form-group row my-2">
+                                    <label class="col-form-label col-sm-2" for="exerciseComment">comentario</label>
+                                    <div class="col-sm-6">
+                                        <input class="form-control" type="text" th:field="*{exerciseComment}" id="exerciseComment" placeholder="Comentario adicional">
+                                    </div>
+                                </div>
+                                <div style="color:red" th:if="${#fields.hasErrors('exerciseComment')}" th:errors="*{exerciseComment}"></div>
+                                
+                                <div class="form-group row my-2">
+                                    <div class="col-sm-12">
+                                        <button class="btn btn-primary" type="submit">Añadir<i class=" ms-2 fa-solid fa-plus"></i></button>
+                                    </div>
+                                </div >
+    
+                                </form>
+                        </div>
+                    </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer th:replace="~{layout/fragments :: footer}">
+
+    </footer>
+
+    <script>
+        async function loadExercise(exerciseId) {
+            try {
+                // Llamada a la API para obtener los datos del ejercicio
+                const response = await fetch(`/app/exercise/${exerciseId}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                const exercise = await response.json();
+                //Limpiar antes de mostrar
+                clearForm();
+                // Asignar los datos a los campos del formulario
+                document.getElementById('exerciseName').value = exercise.exerciseName;
+                document.getElementById('variant').value = exercise.variant;
+                document.getElementById('exerciseComment').value = exercise.exerciseComment;
+    
+                //document.querySelector('input[name="id"]').value = exercise.id;
+                document.getElementById('exerciseId').value = exercise.id;
+
+                document.getElementById('submitExerciseBtn').value='Guardar cambios'
+    
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        
+
+
+        // Función para limpiar el formulario
+        function clearForm() {
+        document.getElementById('exerciseId').value = '';
+        document.getElementById('exerciseName').value = '';
+        document.getElementById('variant').value = '';
+        document.getElementById('exerciseComment').value = '';
+        }
+
+        //Función para mostrar el formulario de creación de ejercicios
+        function showCreateForm(){
+            clearForm();
+            document.getElementById('submitExerciseBtn').value='Crear'
+        }
+    </script>
+
+</body>
+</html>

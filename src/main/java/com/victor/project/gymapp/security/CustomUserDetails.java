@@ -1,4 +1,4 @@
-package security;
+package com.victor.project.gymapp.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +13,8 @@ public class CustomUserDetails implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
     private final String uuid;
 
-    public CustomUserDetails(String username, String password, boolean isEnabled, Collection<? extends GrantedAuthority> authorities, String uuid) {
+    public CustomUserDetails(String username, String password, boolean isEnabled,
+            Collection<? extends GrantedAuthority> authorities, String uuid) {
         this.username = username;
         this.password = password;
         this.isEnabled = isEnabled;
@@ -60,4 +61,3 @@ public class CustomUserDetails implements UserDetails {
         return isEnabled;
     }
 }
-

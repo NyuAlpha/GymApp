@@ -1,8 +1,10 @@
 <div th:fragment="seasonForm">
+    <input type="hidden" name="seasonId" id="seasonId" th:value="${season.id}">
     <div class="form-group row my-2">
         <label class="col-form-label col-sm-2" for="title">Título</label>
         <div class="col-sm-8 col-xl-6">
-            <input class="form-control" type="text" th:field="*{title}" id="title" minlength="5" maxlength="30" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''">
+            <input class="form-control" type="text" th:field="*{title}" id="title" minlength="5" maxlength="30"
+                th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''">
             <div class="alert alert-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
         </div>
         <span class="col-sm-1 text-secondary">Requerido</span>
@@ -28,8 +30,10 @@
     <div class="form-group row my-2">
         <label class="col-form-label col-sm-2" for="seasonComment">Descripción</label>
         <div class="col-sm-10 col-xl-8">
-            <textarea class="form-control" type="text" th:field="*{seasonComment}" id="seasonComment" rows="4" maxlength="255" th:classappend="${#fields.hasErrors('seasonComment')} ? 'is-invalid' : ''"></textarea>
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('seasonComment')}" th:errors="*{seasonComment}"></div>
+            <textarea class="form-control" type="text" th:field="*{seasonComment}" id="seasonComment" rows="4"
+                maxlength="255" th:classappend="${#fields.hasErrors('seasonComment')} ? 'is-invalid' : ''"></textarea>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('seasonComment')}" th:errors="*{seasonComment}">
+            </div>
         </div>
     </div>
 
@@ -37,10 +41,130 @@
 </div>
 
 
-<div th:fragment="seasonDelete">
-    <form th:action="@{/app/season/delete/} + ${season.id}" th:method="DELETE">
-        <button class="btn btn-danger btn-small " onclick="return confirm('¿Estás seguro que deseas eliminar esta temporada?')" type="submit">
-            Eliminar<i class="ms-2 fa-solid fa-trash"></i>
+<div class="me-3" th:fragment="seasonDelete">
+    <form th:action="@{/app/season/delete}" th:method="DELETE">
+        <input type="hidden" name="seasonId" id="seasonId" th:value="${season.id}">
+        <button class="btn btn-danger"
+            onclick="return confirm('¿Estás seguro que deseas eliminar esta temporada?')" type="submit">
+            Eliminar
+            <i class="ms-2 fa-solid fa-trash"></i>
+        </button>
+    </form>
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- ****************************************************************
+    CAMPOS DE FORMULARIO PARA REGISTROS(ESTADISTICAS) DE USUARIO 
+*******************************************************************-->
+
+
+<div th:fragment="userRecordForm">
+    <div class="form-group row my-2">
+        <label class="col-form-label col-sm-2" for="date">Fecha</label>
+        <div class="col-sm-8 col-xl-6">
+            <input class="form-control" type="date" th:field="*{date}" id="date"
+                th:classappend="${#fields.hasErrors('date')} ? 'is-invalid' : ''">
+        </div>
+        <div class="alert alert-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+        <span class="col-sm-1 text-secondary">Requerido</span>
+    </div>
+
+    <div class="form-group row my-2">
+        <label class="col-form-label col-sm-2" for="height">Altura (cm)</label>
+        <div class="col-sm-3 col-xl-2">
+            <input class="form-control" type="number" min="0" max="250" th:field="*{height}" id="height"
+                th:classappend="${#fields.hasErrors('height')} ? 'is-invalid' : ''">
+        </div>
+        <div class="alert alert-danger" th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></div>
+    </div>
+
+    <div class="form-group row my-2">
+        <label class="col-form-label col-sm-2" for="weight">Peso (kg)</label>
+        <div class="col-sm-3 col-xl-2">
+            <input class="form-control" type="number" min="0" max="250" step="0.1" th:field="*{weight}" id="weight"
+                th:classappend="${#fields.hasErrors('weight')} ? 'is-invalid' : ''">
+        </div>
+        <div class="alert alert-danger" th:if="${#fields.hasErrors('weight')}" th:errors="*{weight}"></div>
+    </div>
+
+    <!-- <div class="form-group row my-2">
+        <label class="col-form-label col-sm-2" for="userRecordComment">Descripción</label>
+        <div class="col-sm-10 col-xl-8">
+            <textarea class="form-control" type="text" th:field="*{userRecordComment}" id="userRecordComment" rows="4" maxlength="50" th:classappend="${#fields.hasErrors('userRecordComment')} ? 'is-invalid' : ''"></textarea>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('userRecordComment')}" th:errors="*{userRecordComment}"></div>
+        </div>
+    </div> -->
+
+
+</div>
+
+
+<div class="me-3" th:fragment="userRecordDelete">
+    <form th:action="@{/app/user_record/delete/} + ${userRecord.id}" th:method="DELETE">
+        <button class="btn btn-danger" onclick="return confirm('¿Estás seguro que deseas eliminar este registro?')"
+            type="submit">Eliminar
+            <i class="ms-2 fa-solid fa-trash"></i>
+        </button>
+    </form>
+</div>
+
+
+
+
+
+
+
+<!-- *****************************************************************
+CAMPOS DE FORMULARIO PARA ENTRENAMIENTO
+********************************************************************** -->
+
+
+<div th:fragment="trainingForm">
+
+    <input type="hidden" id="id" th:field="*{id}">
+    <input type="hidden" id="seasonId" th:field="*{seasonId}">
+
+    <div class="form-group row my-2">
+        <label for="date" class="col-sm-2 col-form-label">Fecha</label>
+        <div class="col-sm-4">
+            <input class="form-control" type="date" th:field="*{date}" id="date">
+            <div class="alert alert-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+        </div>
+        <span class="col-sm-1 text-secondary">Requerido</span>
+    </div>
+
+    <div class="form-group row my-2">
+        <label for="title" class="col-sm-2 col-form-label">Título</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" th:field="*{title}" id="title"></input>
+        </div>
+    </div>
+    
+    <div class="form-group row my-2">
+        <label for="trainingComment" class="col-sm-2 col-form-label">Descripción</label>
+        <div class="col-sm-10">
+            <textarea class="form-control" th:field="*{trainingComment}" id="trainingComment" rows="4"></textarea>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="me-3" th:fragment="trainingDelete">
+    <form th:action="@{/app/season/training/delete}"  th:method="DELETE">
+        <input type="hidden" name="trainingId" id="trainingId" th:value="${training.id}">
+        <input type="hidden" name="seasonId" id="seasonId" th:value="${training.seasonId}">
+        <button type="submit" class="btn btn-danger " 
+                    onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar
+            <i class="ms-2 fa-solid fa-trash"></i>
         </button>
     </form>
 </div>

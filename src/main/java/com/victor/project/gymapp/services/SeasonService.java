@@ -7,28 +7,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.victor.project.gymapp.dto.SeasonDto;
 import com.victor.project.gymapp.models.Season;
 import com.victor.project.gymapp.models.SeasonComment;
 import com.victor.project.gymapp.models.User;
 import com.victor.project.gymapp.repositories.SeasonRepository;
 import com.victor.project.gymapp.repositories.UserRepository;
 
-import dto.SeasonDto;
+import lombok.AllArgsConstructor;
 
 @Service
-public class SeasonService implements ISeasonService{
-
+@AllArgsConstructor
+public class SeasonService implements ISeasonService {
 
     private SeasonRepository seasonRepository;
     private UserRepository userRepository;
-
-
-    
-    public SeasonService(SeasonRepository seasonRepository, UserRepository userRepository) {
-        this.seasonRepository = seasonRepository;
-        this.userRepository = userRepository;
-    }
-
 
 
     @Override
@@ -37,41 +30,43 @@ public class SeasonService implements ISeasonService{
         return seasonRepository.findByUserUuid(getCurrentUserUuid(), pageable);
     }
 
-
-
-
-    //Obtiene una temporada y lo guarda en la BBDD
+    // Obtiene una temporada y lo guarda en la BBDD
     @Override
     @Transactional
-    public Season saveSeason(SeasonDto seasonDto){
-        
+    public Season saveSeason(SeasonDto seasonDto) {
+
         Season season = new Season();
 
         season.setTitle(seasonDto.getTitle());
         season.setStartDate(seasonDto.getStartDate());
 
-        //Puede tener fecha de fin o no.
+        // Puede tener fecha de fin o no.
         if (seasonDto.getEndDate() != null)
             season.setEndDate(seasonDto.getEndDate());
 
-        if(!seasonDto.getSeasonComment().isBlank())
+        if (!seasonDto.getSeasonComment().isBlank())
             season.setSeasonComment(new SeasonComment(seasonDto.getSeasonComment()));
 
-        //Obtiene el usuario de la sesión actual para asignarseo a la temporada
-        User user = userRepository.findByUsername(getCurrentUsername()).orElseThrow(NoSuchElementException::new);
+        // Obtiene el usuario de la sesión actual para asignarseo a la temporada
+        User user = userRepository.findByUuid(getCurrentUserUuid())
+                .orElseThrow(() -> new NoSuchElementException("Usuario actual no encontrado"));
         season.setUser(user);
-        
-        //Guarda y devuelve
+
+        // Guarda y devuelve
         return seasonRepository.save(season);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Season getSeason(Long seasonId){
+    public Season getSeason(Long seasonId) {
         return seasonRepository.findById(seasonId).orElseThrow(NoSuchElementException::new);
     }
 
-
+    @Override
+    @Transactional(readOnly = true)
+    public Season getSeasonWithComment(Long seasonId) {
+        return seasonRepository.findSeasonByIdWithComment(seasonId).orElseThrow(NoSuchElementException::new);
+    }
 
     @Override
     @Transactional
@@ -82,42 +77,37 @@ public class SeasonService implements ISeasonService{
         season.setTitle(seasonDto.getTitle());
         season.setStartDate(seasonDto.getStartDate());
 
-        //Puede tener fecha de fin o no.
+        // Puede tener fecha de fin o no.
         if (seasonDto.getEndDate() != null)
             season.setEndDate(seasonDto.getEndDate());
         else
             season.setEndDate(null);
 
-        
-        //Si el formulario trae un comentario
-        if(!seasonDto.getSeasonComment().isBlank()){
-            //Si ya tenía un comentario asignado simplemente se modifica el texto
-            if(season.getSeasonComment() != null){
+        // Si el formulario trae un comentario
+        if (!seasonDto.getSeasonComment().isBlank()) {
+            // Si ya tenía un comentario asignado simplemente se modifica el texto
+            if (season.getSeasonComment() != null) {
                 season.getSeasonComment().setComment(seasonDto.getSeasonComment());
-            }else{
-                //Si no se crea un nuevo SeasonComment
+            } else {
+                // Si no se crea un nuevo SeasonComment
                 season.setSeasonComment(new SeasonComment(seasonDto.getSeasonComment()));
             }
-        }//Si no hay comentario se comprueba si ya tenía previamente, en dicho caso se eliminará el comentario
-        else{
-            if(season.getSeasonComment() != null)
+        } // Si no hay comentario se comprueba si ya tenía previamente, en dicho caso se
+          // eliminará el comentario
+        else {
+            if (season.getSeasonComment() != null)
                 season.setSeasonComment(null);
         }
 
-        //Guarda y devuelve
+        // Guarda y devuelve
         return seasonRepository.save(season);
-        
+
     }
-
-
 
     @Override
     @Transactional
     public void deleteSeason(Long seasonId) {
         seasonRepository.deleteById(seasonId);
     }
-
-
-    
 
 }

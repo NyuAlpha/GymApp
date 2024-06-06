@@ -7,4 +7,5 @@ public interface IUserService {
 
 
     boolean checkUserForSeasonId(Long seasonId);
+    boolean checkUserForUserRecordId(Long userRecordId);
 }

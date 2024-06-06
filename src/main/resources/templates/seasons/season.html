@@ -48,39 +48,38 @@
                     </table>
 
                     <div class="d-flex">
-                        <a class="btn btn-primary btn-small me-3" th:href="@{/app/season/update/} + ${season.id}">Editar
+                        <a class="btn btn-primary btn-small me-3" th:href="@{/app/season/} + ${season.id} + '/update'">Editar
                             <i class="ms-2 fa-solid fa-pen-to-square"></i>
                         </a>
                         <div th:replace="~{layout/forms :: seasonDelete}"></div>
+                        <a class="btn btn-secondary" th:href="@{/app/season/list}">Volver a las temporadas<i
+                            class=" ms-2 fa-solid fa-rotate-left"></i></a>
                     </div>
                 </div>
 
             </div>
 
-            <div class="my-4">
-                <a class="btn btn-secondary" th:href="@{/app/season/list}">Volver a las temporadas<i
-                        class=" ms-2 fa-solid fa-rotate-left"></i></a>
-            </div>
 
-            <div class="my-2">
+            <div class="my-4">
                 <h2>Entrenamientos</h2>
                 <div class="p-1" th:if="${trainings.isEmpty()}">
                     <span>No hay entrenamientos aun:</span>
                 </div>
-                <a class="btn btn-primary btn-small my-2" th:href="@{/app/training/create}">Crear entrenamiento<i
-                        class=" ms-2 fa-solid fa-plus"></i>
-                </a>
+                    <a th:href="@{/app/season/training/create/} + ${season.id}" type="submit" class="btn btn-primary btn-small my-2">
+                        Crear entrenamiento<i class=" ms-2 fa-solid fa-plus"></i>
+                    </a>
+                </form>
+
                 <ul class="list-unstyled my-2" th:if="${!trainings.isEmpty()}" th:each="training : ${trainings}">
                     <li class="row">
                         <div class="col-sm-8 border-bottom">
-                            <a class="text-decoration-none" th:href="@{/app/training/{id}(id=${training.id})}"
-                                th:text="${training.date} + ' : ' + ${training.title}"></a>
+                            <a th:href="@{/app/season/training/} + ${training.id} + '/show'" type="submit" class="text-decoration-none">
+                                <span th:text="${training.date}"></span>
+                                <span th:if="${training.title}" th:text="': ' + ${training.title}"></span>
+                            </a>
                         </div>
-                        <div class="col-sm-2">
-                            <a class="btn btn-danger btn-small " style="font-size: 11px"
-                                th:href="@{/app/training/delete/{id}(id=${training.id})}"
-                                onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar<i
-                                    class="ms-2 fa-solid fa-trash"></i></a>
+                        <div class="col-sm-3">
+                            <div th:replace="~{layout/forms :: trainingDelete}"></div>
                         </div>
                     </li>
                 </ul>

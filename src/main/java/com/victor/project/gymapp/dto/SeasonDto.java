@@ -1,4 +1,4 @@
-package dto;
+package com.victor.project.gymapp.dto;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -32,14 +32,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Entity // Esta anotación indica que la clase es una entidad que se mapeará en una tabla
-@Table(name = "seasons") // Opcional: especifica el nombre de la tabla en la base de datos
 public class SeasonDto {
 
     private Long id;
 
     @NotBlank(message = "El título no debe estar vacío")
-    @Size(min = 5,max = 50, message = "Debe contener entre 5 y 30 caracteres")
+    @Size(min = 5, max = 50, message = "Debe contener entre 5 y 30 caracteres")
     private String title;
 
     @NotNull(message = "La fecha de inicio no debe estar vacía")
@@ -52,8 +50,8 @@ public class SeasonDto {
     @Size(max = 255, message = "No debe de tener más de 255 caracteres")
     private String seasonComment;
 
-    private String idUser;//Es un uuid del usuario
+    // private String idUser;//Es un uuid del usuario
 
-    private Set<TrainingDto> trainingsDto;
+    // private Set<TrainingDto> trainingsDto;
 
 }

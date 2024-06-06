@@ -1,14 +1,9 @@
 package com.victor.project.gymapp.models;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import dto.SeasonDto;
-import dto.TrainingDto;
+import com.victor.project.gymapp.dto.SeasonDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,7 +44,7 @@ public class Season {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "season_comment_id")
     private SeasonComment seasonComment;
 
@@ -57,51 +52,34 @@ public class Season {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true) 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Training> trainings = new HashSet<>();
 
-   
-    /*  
-        Este método sirve para obtener una instancia dto con los datos de la entidad original de la BBDD.
-        IMPORTANTE, que un parámetro sea null no indica que no exista, puede deberse a que no es necesario
-        cargarlo desde la BBDD, por ejemplo, no es necesario cargar el comentario cada vez que se necesita
-        una temporada.
-    */
-    public SeasonDto getDto(){
+    /*
+     * Este método sirve para obtener una instancia dto con los datos de la entidad
+     * original de la BBDD.
+     */
+    public SeasonDto getFullDto() {
 
         SeasonDto seasonDto = getSimpleDto();
 
-        if (seasonComment != null) //Si tiene un comentario se asigna
+        if (seasonComment != null) // Si tiene un comentario se asigna
             seasonDto.setSeasonComment(seasonComment.getComment());
 
-        if(user != null)
-            seasonDto.setIdUser(user.getUuid());
-
-        if(trainings != null){
-            //Obtenemos los entrenamientos si existen, los transformamos a dto y los ordenamos por fecha
-            seasonDto.setTrainingsDto(
-                trainings.stream()
-                    .map(t -> TrainingDto.getSimpleDto(t))
-                    .sorted(Comparator.comparing(TrainingDto::getDate))
-                    .collect(Collectors.toCollection(LinkedHashSet::new))
-            );
-        }
-
         return seasonDto;
-
     }
 
-
-    //Obtiene los campos elementales para mostrar la temporada en una lista, título, id y fechas.
+    // Obtiene los campos elementales para mostrar la temporada en una lista,
+    // título, id y fechas.
     public SeasonDto getSimpleDto() {
         SeasonDto seasonDto = new SeasonDto();
 
-        //Parámetros no nulos
+        // Parámetros no nulos
         seasonDto.setId(id);
         seasonDto.setTitle(title);
         seasonDto.setStartDate(startDate);
 
-        //Parámetros nullables para el dto
+        // Parámetros nullables para el dto
         if (endDate != null)
             seasonDto.setEndDate(endDate);
 
