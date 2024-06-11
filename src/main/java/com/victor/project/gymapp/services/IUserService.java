@@ -6,6 +6,6 @@ public interface IUserService {
     String getCurrentUserUuid();
 
 
-    boolean checkUserForSeasonId(Long seasonId);
-    boolean checkUserForUserRecordId(Long userRecordId);
+    boolean checkUserForSeasonId(Integer seasonId);
+    boolean checkUserForUserRecordId(Integer userRecordId);
 }

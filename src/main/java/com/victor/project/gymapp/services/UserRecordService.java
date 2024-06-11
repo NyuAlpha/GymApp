@@ -4,7 +4,6 @@ import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +50,7 @@ public class UserRecordService implements IUserRecordService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserRecord getUserRecord(Long userRecordId) {
+    public UserRecord getUserRecord(Integer userRecordId) {
         return userRecordRepository.findById(userRecordId).orElseThrow(NoSuchElementException::new);
     }
 
@@ -59,9 +58,9 @@ public class UserRecordService implements IUserRecordService {
     // entidad de bbdd
     @Override
     @Transactional
-    public UserRecord updateUserRecord(UserRecordDto userRecordDto, Long userRecordId) {
+    public UserRecord updateUserRecord(UserRecordDto userRecordDto) {
         // Obtiene el usuario
-        UserRecord userRecord = userRecordRepository.findById(userRecordId).orElseThrow(NoSuchElementException::new);
+        UserRecord userRecord = userRecordRepository.findById(userRecordDto.getId()).orElseThrow(NoSuchElementException::new);
         // Actualiza con los nuevos campos
         userRecord.update(userRecordDto);
         // Se actualiza y se devuelve
@@ -71,7 +70,7 @@ public class UserRecordService implements IUserRecordService {
     // Elimina el registro de usuario por su id
     @Override
     @Transactional
-    public void deleteUserRecord(Long userRecordId) {
+    public void deleteUserRecord(Integer userRecordId) {
         userRecordRepository.deleteById(userRecordId);// Lo borra
     }
 

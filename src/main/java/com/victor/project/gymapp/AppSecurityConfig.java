@@ -49,4 +49,5 @@ public class AppSecurityConfig {
             .exceptionHandling(ex -> ex.accessDeniedPage("/error_403"))
             .build();
     }
+    
 }

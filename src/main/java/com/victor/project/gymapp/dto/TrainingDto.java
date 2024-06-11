@@ -1,16 +1,8 @@
 package com.victor.project.gymapp.dto;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.format.annotation.DateTimeFormat;
-
-import com.victor.project.gymapp.models.Exercise;
-import com.victor.project.gymapp.models.Training;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -22,8 +14,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TrainingDto {
 
-    private Long id;
-    private Long seasonId; //Temporada a la que pertenece
+    private Integer id;
+    private Integer seasonId; //Temporada a la que pertenece
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull
@@ -32,6 +24,7 @@ public class TrainingDto {
     @Size(max=30, message = "No debe contener más de 30 caracteres")
     private String title;
 
+    @Size(max=100, message = "No debe contener más de 100 caracteres")
     private String trainingComment;// comentario asociado al entrenamiento, debe cargar siempre
 
     private Set<ExerciseDto> exerciseDtos; // Los ejercicios asociados

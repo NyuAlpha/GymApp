@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 public class UserRecordDto {
 
-    private Long id;
+    private Integer id;
 
     @NotNull(message = "Campo fecha obligatorio")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

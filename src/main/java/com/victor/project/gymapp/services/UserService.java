@@ -1,8 +1,6 @@
 package com.victor.project.gymapp.services;
 
 import java.util.Optional;
-
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +38,7 @@ public class UserService implements IUserService {
     // Verifica que la temporada pertenece al usuario logeado
     @Override
     @Transactional
-    public boolean checkUserForSeasonId(Long seasonId) {
+    public boolean checkUserForSeasonId(Integer seasonId) {
         Optional<String> optionalUuid = userRepository.findUserUuidBySeason(seasonId);
         return checkUser(optionalUuid);
     }
@@ -48,7 +46,7 @@ public class UserService implements IUserService {
     // Verifica que el registro de usuario pertenece al usuario logeado
     @Override
     @Transactional
-    public boolean checkUserForUserRecordId(Long userRecordId) {
+    public boolean checkUserForUserRecordId(Integer userRecordId) {
         Optional<String> optionalUuid = userRepository.findUserUuidByUserRecord(userRecordId);
         return checkUser(optionalUuid);
     }
@@ -57,15 +55,12 @@ public class UserService implements IUserService {
     // Compara el UUID del propietario de un registro con el del usuario logeado
     private boolean checkUser(Optional<String> optionalUuid) {
 
-        System.out.println("Comprobando...");
+
         // Si no existe el uuid se queda vacio
         String uuid = optionalUuid.orElse("");
-        System.out.println("obteniendo uuid '" + uuid + "'");
         // Se obtiene el uuid del usuario logeado
         String actualUserUuid = getCurrentUserUuid();
-        System.out.println("obteniendo uuid usuario actual -> '" + actualUserUuid + "'");
         // retorna true o false dependiendo de si coinciden o no.
-        System.out.println("Comprobando si coinciden? '" + uuid + "' =? '" + actualUserUuid + "'");
         return uuid.equals(actualUserUuid);
     }
 

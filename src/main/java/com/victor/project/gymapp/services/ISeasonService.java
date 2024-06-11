@@ -12,12 +12,12 @@ public interface ISeasonService extends CrudService {
 
     Season saveSeason(SeasonDto seasonDto);
 
-    Season getSeason(Long seasonId);
+    Season getSeason(Integer seasonId);
 
-    Season getSeasonWithComment(Long seasonId);
+    Season getSeasonWithComment(Integer seasonId);
 
-    Season updateSeason(SeasonDto seasonDto, Long seasonId);
+    Season updateSeason(SeasonDto seasonDto, Integer seasonId);
 
-    void deleteSeason(Long seasonId);
+    void deleteSeason(Integer seasonId);
 
 }

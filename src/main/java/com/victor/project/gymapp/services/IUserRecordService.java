@@ -12,11 +12,11 @@ public interface IUserRecordService extends CrudService {
 
     UserRecord saveUserRecord(UserRecordDto userRecordDto);
 
-    UserRecord getUserRecord(Long userRecordId);
+    UserRecord getUserRecord(Integer userRecordId);
 
-    UserRecord updateUserRecord(UserRecordDto userRecordDto, Long userRecordId);
+    UserRecord updateUserRecord(UserRecordDto userRecordDto);
 
-    void deleteUserRecord(Long userRecordId);
+    void deleteUserRecord(Integer userRecordId);
 
     UserRecord getLastUserRecordByUser();
 }

@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.victor.project.gymapp.models.UserRecord;
 
-public interface UserRecordRepository extends CrudRepository<UserRecord, Long> {
+public interface UserRecordRepository extends CrudRepository<UserRecord, Integer> {
 
     // Devuelve los registros de un usuario de forma paginada
     Page<UserRecord> findByUserUuid(String uuid, Pageable pageable);

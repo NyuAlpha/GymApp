@@ -49,7 +49,7 @@ public class TrainingService implements ITrainingService {
      */
     @Override
     @Transactional
-    public void deleteTraining(Long id) {
+    public void deleteTraining(Integer id) {
         trainingRepository.deleteById(id);
     }
 
@@ -58,11 +58,9 @@ public class TrainingService implements ITrainingService {
      */
     @Override
     @Transactional
-    public Training getFullTrainingById(Long id) {
+    public Training getFullTrainingById(Integer id) {
         // Busca por id el entrenamiento, incluyendo sus ejercicios y series
-        Optional<Training> optionalTraining = trainingRepository.findByIdWithDetails(id);
-        // Si no se encuentra se lanza la excepción
-        Training training = optionalTraining.orElseThrow(NoSuchElementException::new);
+        Training training = trainingRepository.findByIdWithDetails(id).orElseThrow(NoSuchElementException::new);
         // Ahora puede devolver el entrenamiento y sus detalles en forma de dto
         return training;
     }
@@ -78,7 +76,7 @@ public class TrainingService implements ITrainingService {
         training.setTitle(trainingDto.getTitle());
 
         // Si tiene comentario se le asigna
-        if (!trainingDto.getTrainingComment().isEmpty()) {
+        if (!trainingDto.getTrainingComment().isBlank()) {
 
             // Si ya existe un comentario lo reemplaza directamente
             if (training.getTrainingComment() != null) {
@@ -86,10 +84,12 @@ public class TrainingService implements ITrainingService {
                 training.getTrainingComment().setComment(trainingDto.getTrainingComment());
             } else {
                 // Si no hay comentario previo se crea uno nuevo
-                TrainingComment trainingComment = new TrainingComment();
-                trainingComment.setComment(trainingDto.getTrainingComment());
-                training.setTrainingComment(trainingComment);
+                training.setTrainingComment(new TrainingComment(trainingDto.getTrainingComment()));
             }
+        }
+        //Si no tiene comentario se borra el que tenía
+        else{
+            training.setTrainingComment(null);
         }
         // Se guarda y se devuelve en forma de DTO
         return trainingRepository.save(training);
@@ -97,7 +97,7 @@ public class TrainingService implements ITrainingService {
 
     @Override
     @Transactional
-    public Page<Training> findAllTrainingsBySeasonId(Pageable pageable, Long seasonId) {
+    public Page<Training> findAllTrainingsBySeasonId(Pageable pageable, Integer seasonId) {
         return trainingRepository.findBySeasonId(pageable, seasonId);
     }
 

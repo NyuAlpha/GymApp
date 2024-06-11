@@ -11,11 +11,11 @@ public interface ITrainingService extends CrudService {
 
     Training saveTraining(TrainingDto trainingDto);
 
-    void deleteTraining(Long id);
+    void deleteTraining(Integer id);
 
     Training updateTraining(TrainingDto trainingDto);
 
-    Training getFullTrainingById(Long id);
+    Training getFullTrainingById(Integer id);
 
-    Page<Training> findAllTrainingsBySeasonId(Pageable pageable, Long seasonId);
+    Page<Training> findAllTrainingsBySeasonId(Pageable pageable, Integer seasonId);
 }

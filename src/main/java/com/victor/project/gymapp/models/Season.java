@@ -33,7 +33,7 @@ public class Season {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "title", nullable = false, length = 50)
     private String title;
@@ -55,23 +55,11 @@ public class Season {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "season", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Training> trainings = new HashSet<>();
 
-    /*
-     * Este método sirve para obtener una instancia dto con los datos de la entidad
-     * original de la BBDD.
-     */
-    public SeasonDto getFullDto() {
 
-        SeasonDto seasonDto = getSimpleDto();
-
-        if (seasonComment != null) // Si tiene un comentario se asigna
-            seasonDto.setSeasonComment(seasonComment.getComment());
-
-        return seasonDto;
-    }
 
     // Obtiene los campos elementales para mostrar la temporada en una lista,
     // título, id y fechas.
-    public SeasonDto getSimpleDto() {
+    public SeasonDto getDto() {
         SeasonDto seasonDto = new SeasonDto();
 
         // Parámetros no nulos
@@ -82,6 +70,9 @@ public class Season {
         // Parámetros nullables para el dto
         if (endDate != null)
             seasonDto.setEndDate(endDate);
+
+        if (seasonComment != null) // Si tiene un comentario se asigna
+            seasonDto.setSeasonComment(seasonComment.getComment());    
 
         return seasonDto;
     }

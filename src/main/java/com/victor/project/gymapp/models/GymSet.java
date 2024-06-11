@@ -1,13 +1,13 @@
 package com.victor.project.gymapp.models;
 
 
+import java.math.BigDecimal;
+
+import com.victor.project.gymapp.dto.GymSetDto;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,23 +22,42 @@ import lombok.Setter;
 @Table(name="gym_sets")
 public class GymSet {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private GymSetId id;
 
-    @Column(name="set_order", nullable = false) 
-    private Integer setOrder;//Indica el orden que ocupa en la lista de las series, jamás puede ser nulo
+    @Column( precision = 4, scale = 1)  // Configurando precision y scale para DECIMAL(4,1)
+    private BigDecimal weight;
 
-    private Float weight;//El peso a levantar, puede ser nulo en caso
+    @Column()
+    private Byte repetitions;//Repeticiones de la serie, es nulo cuando se desconoce o se llega al fallo
 
-    private Integer repetitions;//Repeticiones de la serie, es nulo cuando se desconoce o se llega al fallo
-
+    //Si la serie es al fallo muscular o no
     @Column(nullable=false, columnDefinition = "boolean default false")
     private Boolean failure;
 
-    @ManyToOne
-    @JoinColumn(name="exercise_id",nullable = false)
-    private Exercise exercise;//comentario asociado a un ejercicio
+    //Esta columna sirve para contabilizar una serie varias veces cuando 
+    //sean consecutivas e identicas 60kg(8,8,7) -> 60kg(2x8,7)
+    @Column(name = "times_repeated")
+    private Byte timesRepeated;
+
+
+    public void setId(Exercise e, Byte order){
+        id = new GymSetId();
+        id.setExercise(e);
+        id.setSetOrder(order);
+    }
+
+    public GymSetDto getDto(){
+
+        //Se mapea la entidad al dto, pero antes se convierten algunos datos para mostrarlos
+        Integer reps = (repetitions == null)? 0: (int)repetitions;
+        BigDecimal weightInt = (weight == null)? BigDecimal.valueOf(0.0):weight;
+
+        GymSetDto gymSetDto = new GymSetDto(id.getExercise().getId(), id.getSetOrder(), weightInt, reps, failure,(int)timesRepeated);
+        
+        //Se devuelve
+        return gymSetDto;
+    }
 
 
 }

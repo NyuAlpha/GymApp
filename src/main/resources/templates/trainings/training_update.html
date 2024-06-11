@@ -17,31 +17,34 @@
 
 
             <!-- Contenido principal -->
-            <main class="col-md-7 col-12">
-                <div class="p-4">
+            <main class="col-md-9 col-12 p-3">
 
                     <h2>Editor de entrenamiento</h2>
                     
-                    <form class="my-3" th:action="@{/app/season/training/update}" th:object="${training}" th:method="PUT">
+                    <form class="my-3" id="updateTrainingForm" th:action="@{/app/season/training/update}" th:object="${training}" th:method="PUT">
 
                         <div th:replace="~{layout/forms :: trainingForm}">
                         </div>
                         
-                        <div class="form-group row my-2">
-                            <div class="col-sm-12">
-                                <button type="submit" class="btn btn-primary">
-                                    Guardar<i class=" ms-2 fa-solid fa-floppy-disk"></i>
-                                </button>
-                                <a class="btn btn-secondary" th:href="@{/app/season/} + ${training.seasonId} + '/show'">
-                                    Volver a la temporada<i class=" ms-2 fa-solid fa-rotate-left"></i>
-                                </a>
-                            </div>
-                        </div>
-                        
                     </form>
 
+                    <div class="d-flex my-4">
+                        <button type="submit" form="updateTrainingForm" class="btn btn-sm btn-primary me-2">
+                            Guardar<i class=" ms-2 fa-solid fa-floppy-disk"></i>
+                        </button>
+                        <form th:action="@{/app/season/training/delete}"  th:method="DELETE">
+                            <input type="hidden" name="trainingId" id="trainingId" th:value="${training.id}">
+                            <input type="hidden" name="seasonId" id="seasonId" th:value="${training.seasonId}">
+                            <button type="submit" class="btn btn-sm btn-danger me-2 " 
+                                        onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar
+                                <i class="ms-2 fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                        <a class="btn btn-sm btn-secondary me-2" th:href="@{/app/season/training/} + ${training.id} + '/show'">
+                            Volver<i class=" ms-2 fa-solid fa-rotate-left"></i>
+                        </a>
+                    </div>
 
-                </div>
             </main>
         </div>
 

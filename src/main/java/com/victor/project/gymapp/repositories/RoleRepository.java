@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.victor.project.gymapp.models.Role;
 
-public interface RoleRepository extends CrudRepository<Role,Long>{
+public interface RoleRepository extends CrudRepository<Role,Integer>{
 
     public Optional<Role> findByName(String name);
 

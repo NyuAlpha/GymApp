@@ -60,11 +60,13 @@ public class SeasonController {
 
         Pageable pageable = PageRequest.of(page, 10, Sort.by("startDate").descending());
         Page<Season> seasons = seasonService.findAllSeasons(pageable);
-        Page<SeasonDto> seasonsDto = seasons.map(s -> s.getSimpleDto());
+        Page<SeasonDto> seasonsDto = seasons.map(s -> s.getDto());
 
         PageRender<SeasonDto> pageRender = new PageRender<>("/app/season/list", seasonsDto);
         model.addAttribute("seasons", seasonsDto);
         model.addAttribute("page", pageRender);
+
+
         return "seasons/seasons_list";
     }
 
@@ -82,8 +84,8 @@ public class SeasonController {
 
         SeasonDto seasonDto = new SeasonDto();
         seasonDto.setStartDate(LocalDate.now());
-
         model.addAttribute("season", seasonDto);
+
         return "seasons/season_create";
     }
 
@@ -105,7 +107,7 @@ public class SeasonController {
             return "seasons/season_create";
         }
         // Guardamos y conseguimos el id para redireccionar a el
-        Long seasonId = seasonService.saveSeason(seasonDto).getId();
+        Integer seasonId = seasonService.saveSeason(seasonDto).getId();
         flash.addFlashAttribute("success", "Temporada creada con exito");
 
 
@@ -124,7 +126,7 @@ public class SeasonController {
 
     // Carga una temporada y detalles por su id y muestra sus entrenamientos paginados si existen
     @GetMapping("{seasonId}/show")
-    public String showSeason(Model model, @PathVariable("seasonId") Long seasonId , 
+    public String showSeason(Model model, @PathVariable("seasonId") Integer seasonId , 
                             @RequestParam(name = "page", defaultValue = "0") int page) {
 
 
@@ -134,7 +136,7 @@ public class SeasonController {
 
 
         // Ahora se carga la temporada con el mismo id, getSeasonWithComment carga también el comentario
-        SeasonDto seasonDto = seasonService.getSeasonWithComment(seasonId).getFullDto();
+        SeasonDto seasonDto = seasonService.getSeasonWithComment(seasonId).getDto();
         model.addAttribute("season", seasonDto);
 
 
@@ -147,6 +149,11 @@ public class SeasonController {
         PageRender<TrainingDto> pageRender = new PageRender<>("/app/season/" + seasonId, trainingsDto);
         model.addAttribute("trainings", trainingsDto);
         model.addAttribute("page", pageRender);
+
+        //Training vacio para crear uno desde el formulario
+        TrainingDto trainingDto = new TrainingDto(LocalDate.now());
+        trainingDto.setSeasonId(seasonId);
+        model.addAttribute("training", trainingDto);
 
         return "seasons/season";
     }
@@ -167,7 +174,7 @@ public class SeasonController {
 
 
     @GetMapping(path = "{seasonId}/update")
-    public String updateSeasonForm(Model model, @PathVariable("seasonId") Long seasonId) {
+    public String updateSeasonForm(Model model, @PathVariable("seasonId") Integer seasonId) {
 
 
         // Se comprueba si el usuario es el propietario, si no lo es lanza error 403, si es, continua.
@@ -175,7 +182,7 @@ public class SeasonController {
             throw new AccessDeniedException("No tienes permiso para realizar esta acción");
 
         // Ahora se carga la temporada con el mismo id
-        SeasonDto seasonDto = seasonService.getSeason(seasonId).getFullDto();
+        SeasonDto seasonDto = seasonService.getSeason(seasonId).getDto();
         model.addAttribute("season", seasonDto);
 
         return "seasons/season_update";
@@ -196,8 +203,8 @@ public class SeasonController {
 
 
     @PutMapping(path = "/update")
-    public String updateSeason(Model model, @RequestParam("seasonId") Long seasonId,  @ModelAttribute("season") @Valid SeasonDto seasonDto,
-                             BindingResult result, RedirectAttributes flash, HttpSession session) {
+    public String updateSeason(Model model, @ModelAttribute("season") @Valid SeasonDto seasonDto,
+                             BindingResult result, RedirectAttributes flash) {
 
 
         if (result.hasErrors()) {
@@ -205,13 +212,13 @@ public class SeasonController {
             return "seasons/season_update";
         }
         // Se comprueba si el usuario es el propietario, si no lo es lanza error 403, si es, continua.
-        if (!userService.checkUserForSeasonId(seasonId))
+        if (!userService.checkUserForSeasonId(seasonDto.getId()))
             throw new AccessDeniedException("No tienes permiso para realizar esta acción");
 
         // Guardamos y conseguimos el id para redireccionar a el
-        seasonService.updateSeason(seasonDto, seasonId);
+        seasonService.updateSeason(seasonDto, seasonDto.getId());
         flash.addFlashAttribute("success", "Temporada actualizada con exito");
-        return "redirect:/app/season/" + seasonId + "/show";
+        return "redirect:/app/season/" + seasonDto.getId() + "/show";
     }
 
 
@@ -229,7 +236,7 @@ public class SeasonController {
 
 
     @DeleteMapping(path = "/delete")
-    public String deleteSeason(@RequestParam("seasonId") Long seasonId, RedirectAttributes redirectAttributes) {
+    public String deleteSeason(@RequestParam("seasonId") Integer seasonId, RedirectAttributes redirectAttributes) {
 
         // Se comprueba si el usuario es el propietario, si no lo es lanza error 403, si es, continua.
         if (!userService.checkUserForSeasonId(seasonId))

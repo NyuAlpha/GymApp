@@ -9,6 +9,7 @@ import com.victor.project.gymapp.models.Exercise;
 import com.victor.project.gymapp.models.GymSet;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,62 +24,36 @@ import lombok.ToString;
 @ToString
 public class ExerciseDto {
 
-    private Long id;
+    private Integer id;
 
-    private Long trainingId;
+    private Integer trainingId;
 
     @NotBlank
+    @Size(max=20, message = "No debe contener más de 20 caracteres")
     private String exerciseName;// Nombre del ejercicio
 
+    @Size(max=20, message = "No debe contener más de 20 caracteres")
     private String variant;// Variante del ejercicio
 
+    @Size(max = 100, message = "No debe de tener más de 100 caracteres")
     private String exerciseComment;// comentario asociado a un ejercicio
+
+    private Byte exerciseOrder;//Orden del ejercicio, es obligatorio, pero no se recupera del formulario
 
     private Set<GymSetDto> gymSetsDtos; // Las series Dto de cada ejercicio irán incorporadas en esta lista
 
-    public static ExerciseDto getsimpleDto(Exercise exercise) {
-        ExerciseDto exerciseDto = new ExerciseDto();
-        exerciseDto.setId(exercise.getId());
-        // No comprobamos si tiene nombre de ejercicio puesto que no puede ser null bajo
-        // ningún concepto
-        exerciseDto.setExerciseName(exercise.getExerciseName().getName());
-        exerciseDto.setVariant(exercise.getVariant());
-        // Comprobamos si hay un comentario asociado al ejercicio
-        if (exercise.getExerciseComment() != null) {
-            exerciseDto.setExerciseComment(exercise.getExerciseComment().getComment());
-        }
-        return exerciseDto;
+
+
+    public ExerciseDto(Integer trainingId) {
+        this.trainingId = trainingId;
     }
 
-    public static ExerciseDto getDetailsDto(Exercise exercise) {
-        ExerciseDto exerciseDto = getsimpleDto(exercise);
 
-        // Conseguimos el id de su entrenamiento para tener la referencia al
-        // entrenamiento en caso de querer volver atrás en la vista.
-        exerciseDto.setTrainingId(exercise.getTraining().getId());
-
-        // Ahora cargamos las series de este ejercicio en caso de que existan
-        Set<GymSet> gymSets = exercise.getGymSets();
-        if (!gymSets.isEmpty()) {
-            // Se transforma la lista de series a la lista de series dto
-            Set<GymSetDto> setsDto = gymSets.stream()
-                    .map(gymSet -> GymSetDto.getsimpleDto(gymSet))
-                    .sorted(Comparator.comparing(GymSetDto::getId))
-                    .collect(Collectors.toCollection(LinkedHashSet::new));
-
-            // Finalmente se lo pasamos a la instacia de ejercicio dto
-            exerciseDto.setGymSetsDtos(setsDto);
-        }
-
-        return exerciseDto;
-    }
 
     // Formatea la series a un formato más compacto
     public String printGymSetFormat() {
-        StringBuilder stringBuilder = new StringBuilder(exerciseName)
-                .append(" : ")
-                .append((variant == null || variant.isBlank()) ? "" : variant)
-                .append("-->");
+        
+        StringBuilder stringBuilder = new StringBuilder();
 
         // Si hay series se procede a crear un formato
         if (gymSetsDtos != null) {
@@ -112,15 +87,15 @@ public class ExerciseDto {
                 // en la primera serie se inicializa todo
                 if (setCounter == 0) {
                     stringBuilder.append(actualWeight + "Kg(");
-                    setCounter = 1;
+                    setCounter = s.getTimesRepeated();
                 }
                 // Se salta la primera serie al no haber peso previo
                 else {
                     // Si es el mismo peso no se anota nada.
                     if (previousWeight.equals(actualWeight)) {
                         // Si las repeticiones son las mismas sigue contabilizando series identicas
-                        if (previousRepetitions.equals(s.getRepetitions())) {
-                            setCounter++;
+                        if (previousRepetitions.equals(s.getRepetitions().toString())) {
+                            setCounter += s.getTimesRepeated();
                         }
                         // Si son distintas se anotan el resultado de la series previas (series x
                         // repeticiones) y se resetea
@@ -139,7 +114,7 @@ public class ExerciseDto {
                                 .append("), ")// Cierra y añade una coma para otro peso
                                 .append(actualWeight)// Se añade el nuevo peso
                                 .append("Kg(");
-                        setCounter = 1;
+                        setCounter = s.getTimesRepeated();
                     }
                 }
                 previousWeight = actualWeight;// Se actualiza el peso previo para la serie siguiente.
@@ -152,11 +127,18 @@ public class ExerciseDto {
                     .append(")");// Fin de todas las series.
 
         }
-
+        //Si el set de series está vacio
         else {
             stringBuilder.append("Sin series");
         }
         return stringBuilder.toString();
-    }
+     }
 
+
+    public String printShortComment(){
+        if(exerciseComment.length() > 10)
+            return exerciseComment.substring(0, 10).concat("...");
+
+        return exerciseComment;
+    }
 }

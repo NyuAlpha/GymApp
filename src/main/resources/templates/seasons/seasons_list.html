@@ -16,39 +16,64 @@
     </aside>
 
 
-    <main class="col-md-7 col-12 p-3">
+    <main class="col-md-9 col-12 p-3">
         <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
-        <div class="p-2">
+
             <h2>Temporadas</h2>
-            <div class="p-1" th:if="${seasons.isEmpty()}">
-                <span>No hay temporadas aun</span>
-            </div>
-            <ul class="list-unstyled" th:if="${!seasons.isEmpty()}" th:each="season : ${seasons}">
-                <li class="row">
-                    <div class="col-8 border-bottom">
-                        
-                            <a th:href="@{/app/season/} + ${season.id} + '/show'" type="submit" class="text-decoration-none">
-                                <span th:if="${season.endDate != null}"
-                                    th:text="${season.startDate} + '  ->  ' + ${season.endDate} + ' : ' + ${season.title}"></span>
-                                <span th:if="${season.endDate == null}"
-                                    th:text="${season.startDate} + ' : ' + ${season.title}"></span>
-                            </a>
+            <div class="table-responsive">
+                <table class=" table table-sm table-bordered table-hover table-light">
+                    <thead class="table-primary">
+                        <tr >
+                            <th style="width: 20%;">Título</th>
+                            <th style="width: 12%;">Inicio</th>
+                            <th style="width: 12%;">Fin</th>
+                            <th style="width: 50%;">Descripción</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-secondary info-txt">
+                        <tr th:if="${seasons.isEmpty()}"><td colspan="4">No hay entrenamientos creados aun</td></tr>
+                        <tr th:if="${!seasons.isEmpty()}" th:each="season : ${seasons}">
 
-                    </div>
-                    <div class="col-2">
-                        <div th:replace="~{layout/forms :: seasonDelete}"></div>
-                    </div>
-                </li>
-            </ul>
+                           
+                                <td>
+                                    <a th:href="@{/app/season/} + ${season.id} + '/show'" th:text="${season.title}" class="text-decoration-none text-secondary"></a>
+                                </td>
+                                <td>
+                                    <a th:href="@{/app/season/} + ${season.id} + '/show'" th:text="${season.startDate}" class="text-decoration-none text-secondary"></a>
+                                </td>
+                                <td>
+                                    <a th:href="@{/app/season/} + ${season.id} + '/show'" th:text="${season.endDate}" class="text-decoration-none text-secondary"></a>
+                                </td>
+                                <td>
+                                    <a th:href="@{/app/season/} + ${season.id} + '/show'" th:text="${season.seasonComment}" class="text-decoration-none text-secondary"></a>
+                                </td>
+                                <td >
+                                    <div class="d-flex">
+                                        <a th:href="@{/app/season/} + ${season.id} + '/show'" class="me-1 table-mini-btn text-decoration-none">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                        <form th:action="@{/app/season/delete}" th:method="DELETE">
+                                            <input type="hidden" name="seasonId" id="seasonId" th:value="${season.id}">
+                                            <button class="me-1 table-mini-btn"
+                                                onclick="return confirm('¿Estás seguro que deseas eliminar esta temporada?')" type="submit">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            
 
-            <div th:if="${!seasons.isEmpty()}">
-                <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
-            </div>
+                        </tr>
+                    </tbody>
+                </table>
+                <div th:if="${!seasons.isEmpty()}">
+                    <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
+                </div>
 
             <a class="btn btn-primary btn-small" th:href="@{/app/season/create}">Nueva temporada<i
                     class=" ms-2 fa-solid fa-plus"></i></a>
 
-        </div>
     </main>
 
 </div>

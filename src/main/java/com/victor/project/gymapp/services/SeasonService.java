@@ -58,19 +58,19 @@ public class SeasonService implements ISeasonService {
 
     @Override
     @Transactional(readOnly = true)
-    public Season getSeason(Long seasonId) {
+    public Season getSeason(Integer seasonId) {
         return seasonRepository.findById(seasonId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Season getSeasonWithComment(Long seasonId) {
+    public Season getSeasonWithComment(Integer seasonId) {
         return seasonRepository.findSeasonByIdWithComment(seasonId).orElseThrow(NoSuchElementException::new);
     }
 
     @Override
     @Transactional
-    public Season updateSeason(SeasonDto seasonDto, Long seasonId) {
+    public Season updateSeason(SeasonDto seasonDto, Integer seasonId) {
 
         Season season = seasonRepository.findById(seasonId).orElseThrow(NoSuchElementException::new);
 
@@ -92,8 +92,7 @@ public class SeasonService implements ISeasonService {
                 // Si no se crea un nuevo SeasonComment
                 season.setSeasonComment(new SeasonComment(seasonDto.getSeasonComment()));
             }
-        } // Si no hay comentario se comprueba si ya tenía previamente, en dicho caso se
-          // eliminará el comentario
+        } // Si no hay comentario se comprueba si ya tenía previamente, en dicho caso se eliminará el comentario
         else {
             if (season.getSeasonComment() != null)
                 season.setSeasonComment(null);
@@ -106,7 +105,7 @@ public class SeasonService implements ISeasonService {
 
     @Override
     @Transactional
-    public void deleteSeason(Long seasonId) {
+    public void deleteSeason(Integer seasonId) {
         seasonRepository.deleteById(seasonId);
     }
 

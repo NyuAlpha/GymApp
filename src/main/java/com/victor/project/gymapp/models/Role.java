@@ -24,7 +24,7 @@ public class Role {
     }
 
 
-    public Role(Long id, String name) {
+    public Role(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -33,7 +33,7 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;//Id del rol, solo tiene utilidad a nivel de base de datos
+    private Integer id;//Id del rol, solo tiene utilidad a nivel de base de datos
 
     @Column(nullable = false, unique = true, length = 50)
     private String name;//Nombre del rol

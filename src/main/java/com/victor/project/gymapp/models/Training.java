@@ -39,7 +39,7 @@ public class Training {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private LocalDate date;
@@ -69,20 +69,17 @@ public class Training {
      */
     public TrainingDto getFullDto() {
 
+
         TrainingDto trainingDto = getSimpleDto();
 
-
-        if (trainingComment != null) // Si tiene un comentario se asigna
-            trainingDto.setTrainingComment(trainingComment.getComment());
         if(exercises != null){
             Set<ExerciseDto> exerciseDtos = exercises.stream()
-            .map(exercise -> ExerciseDto.getDetailsDto(exercise))
-            .sorted(Comparator.comparing(ExerciseDto::getId).reversed())
-            .collect(Collectors.toCollection(LinkedHashSet::new));
+                .map(exercise -> exercise.getDto())
+                .sorted(Comparator.comparing(ExerciseDto::getExerciseOrder))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
             trainingDto.setExerciseDtos(exerciseDtos);
         }
-        
         return trainingDto;
     }
 
@@ -102,6 +99,9 @@ public class Training {
 
         //Ahora carga el id de su temporada asignada
         trainingDto.setSeasonId(season.getId());
+
+        if (trainingComment != null) // Si tiene un comentario se asigna
+        trainingDto.setTrainingComment(trainingComment.getComment());
 
         return trainingDto;
     }

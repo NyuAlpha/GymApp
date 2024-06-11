@@ -27,7 +27,7 @@ public class UserRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private Short height;// Altura del usuario
 
@@ -61,11 +61,12 @@ public class UserRecord {
     public void update(UserRecordDto userRecordDto) {
         // Campos no nulos
         date = userRecordDto.getDate();
-        id = userRecordDto.getId();
 
         // Campos que pueden ser nulos
         height = userRecordDto.getHeight();
         weight = userRecordDto.getWeight();
+
+        System.out.println("Nuevos campos -> " + date.toString() + "   " + height + "   " + weight);
     }
 
 }

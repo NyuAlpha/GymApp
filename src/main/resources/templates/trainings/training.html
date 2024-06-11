@@ -1,128 +1,177 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{layout/fragments :: head}">
 </head>
 
-<body >
-    <!-- Cabecera -->
+<body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
+
+
     <header th:replace="~{layout/fragments :: header}">
     </header>
 
-    <!-- Estructura principal del cuerpo de la página -->
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Apartado a la izquierda -->
-            <aside th:replace="~{layout/fragments :: aside}">
-            </aside>
 
-            <!-- Contenido principal -->
-            <main class="col-md-7 col-12 p-3">
+    <div class="flex-grow-1 d-flex">
 
-                    <div class="alert  alert-success" th:if="${success}" th:text="${success}"></div>
-                    <div class="card my-2 ">
-                        <div class="card-header">
-                            <h4 th:if="${training.title}" th:text="${training.title}"></h4>
-                            <h4 th:if="${training.title.isEmpty()}" >Sin título</h4>
-                        </div>
-                        <div class="card-body">
-                            <table class="my-3 table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td th:text="${training.date}"></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" th:if="${training.trainingComment}"
-                                            th:text="'Descripción: '+${training.trainingComment}"></td>
-                                        <td colspan="2" th:if="${training.trainingComment} == null"
-                                            th:text="'Descripción: Sin descripción '"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-        
-                            <div class="d-flex">
+        <aside th:replace="~{layout/fragments :: aside}">
+        </aside>
 
-                                <a class="btn btn-primary btn-small me-3" th:href="@{/app/season/training/} + ${trainingId} + '/update'">
-                                    Editar<i class="ms-2 fa-solid fa-pen-to-square"></i>
-                                </a>
 
-                                <div th:replace="~{layout/forms :: trainingDelete}"></div>
+        <main class="col-md-9 col-12 p-3">
 
-                                <a class="btn btn-secondary" th:href="@{/app/season/} + ${training.seasonId} + '/show'">
-                                    Volver a la temporada<i class=" ms-2 fa-solid fa-rotate-left"></i>
-                                </a>
-                            </div>
-                        </div>
-        
+            <div class="alert  alert-success show-message p-2" th:if="${successTraining}" th:text="${successTraining}"></div>
+            <div class="card my-2 ">
+
+                <h4 class="card-header" th:if="${!training.title.isEmpty()}" th:text="${training.title}"></h4>
+                <h4 class="card-header" th:if="${training.title.isEmpty()}" >Entrenamiento</h4>
+
+                <div class="card-body">
+
+                    <div>
+                        <span>Realizado el: </span><h5 class="d-inline ms-2" th:text="${training.date}"></h5>
+                    </div>
+
+                    <div class="my-3" th:if="${training.trainingComment}">
+                        <span colspan="2"  th:text="${training.trainingComment}"></span>
                     </div>
                     
-                    <div class="my-4">
-                        <h2>Ejercicios</h2>
+                    <div class="d-flex">
 
-                        <ul class="list-unstyled" th:if="${exerciseDtos != null}">
-                            <li th:each="exercise : ${exerciseDtos}" class="mb-2 border-bottom pb-2 d-flex flex-column">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a th:href="@{/app/exercise/{id}(id=${exercise.id})}" th:text="${exercise.printGymSetFormat()}" class="text-decoration-none"></a>
-                                    <a th:href="@{'/app/exercise/delete/' + ${exercise.trainingId}+ '/'+ ${exercise.id}}" onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" class="btn btn-danger btn-sm ms-2">
-                                        Eliminar<i class="ms-2 fa-solid fa-trash"></i>
-                                    </a>
-                                </div>
-                                <span class="mt-2 text-secondary" style="font-size: 12px;" th:if="${exercise.exerciseComment}" th:text="'Nota: ' + ${exercise.exerciseComment}"></span>
-                            </li>
-                        </ul>
-                        
-                        <span th:if="${training.exerciseDtos == null}">No hay ningún ejercicio aún</span>
-    
-                        <div class="my-4">
-                            <form class="my-3" th:action="@{/app/exercise/create}" th:object="${exercise}" method="post">
-                                <input type="hidden" name="trainingId" th:value="${trainingId}">
-                                <input type="hidden" th:field="*{id}" id="exerciseId">
-                                <div class="form-group row my-2">
-                                    <label class="col-form-label col-sm-2" for="exerciseName">Nombre</label>
-                                    <div class="col-sm-6">
-                                        <input class="form-control" type="text" th:field="*{exerciseName}" id="exerciseName" placeholder="Ej: Press de banca">
-                                    </div>
-                                </div>
-                                <div style="color:red" th:if="${#fields.hasErrors('exerciseName')}" th:errors="*{exerciseName}"></div>
-        
-                                <div class="form-group row my-2">
-                                    <label class="col-form-label col-sm-2" for="variant">Variante</label>
-                                    <div class="col-sm-6">
-                                        <input class="form-control" type="text" th:field="*{variant}" id="variant" placeholder="Ej: Parada">
-                                    </div>
-                                </div>
-                                <div style="color:red" th:if="${#fields.hasErrors('variant')}" th:errors="*{variant}"></div>
-        
-                                <div class="form-group row my-2">
-                                    <label class="col-form-label col-sm-2" for="exerciseComment">comentario</label>
-                                    <div class="col-sm-6">
-                                        <input class="form-control" type="text" th:field="*{exerciseComment}" id="exerciseComment" placeholder="Comentario adicional">
-                                    </div>
-                                </div>
-                                <div style="color:red" th:if="${#fields.hasErrors('exerciseComment')}" th:errors="*{exerciseComment}"></div>
-                                
-                                <div class="form-group row my-2">
-                                    <div class="col-sm-12">
-                                        <button class="btn btn-primary" type="submit">Añadir<i class=" ms-2 fa-solid fa-plus"></i></button>
-                                    </div>
-                                </div >
-    
-                                </form>
-                        </div>
+                        <a class="btn btn-sm btn-primary me-2" th:href="@{/app/season/training/} + ${trainingId} + '/update'">
+                            Editar<i class=" ms-2 fa-solid fa-pen-to-square"></i>
+                        </a>
+
+                        <form th:action="@{/app/season/training/delete}"  th:method="DELETE">
+                            <input type="hidden" name="trainingId" id="trainingId" th:value="${training.id}">
+                            <input type="hidden" name="seasonId" id="seasonId" th:value="${training.seasonId}">
+                            <button type="submit" class="btn btn-sm btn-danger me-2 " 
+                                        onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar
+                                <i class="ms-2 fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+
+                        <a class="btn btn-sm btn-secondary me-2" th:href="@{/app/season/} + ${training.seasonId} + '/show'">
+                            Volver<i class=" ms-2 fa-solid fa-rotate-left"></i>
+                        </a>
                     </div>
 
-            </main>
-        </div>
+                </div>
+
+
+
+            </div>
+
+            
+            <div class="mt-4">
+                <div class="my-4">
+                    <h6 class="mt-4"> Ejercicios</h6>
+    
+                    <div class="alert alert-success show-message p-2" th:if="${successExercise}" th:text="${successExercise}"></div>
+    
+                    <div class="table-responsive">
+                        
+                        <table class=" table table-sm table-bordered table-hover table-light">
+                            <thead class="table-primary">
+                                <tr >
+                                    <th style="width: 20%;">Ejercicio</th>
+                                    <th style="width: 15%;">Variante</th>
+                                    <th style="width: 55%;">Series</th>
+                                    <th style="width: 10%;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-secondary info-txt">
+                                <tr th:if="${exerciseDtos.isEmpty()}"><td colspan="4">No hay ejercicios aun</td></tr>
+                                <tr th:if="${!exerciseDtos.isEmpty()}" th:each="exercise : ${exerciseDtos}">
+                                    <td class="d-flex justify-content-between m-0">
+                                        <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
+                                                th:text="${exercise.exerciseName}" class="text-decoration-none text-secondary"></a>
+                                        <span class="me-2 table-mini-btn text-secondary" th:if="${exercise.exerciseComment}" data-bs-toggle="tooltip" th:title="${exercise.exerciseComment}">
+                                            <i class="fa-solid fa-comment"></i>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
+                                                th:text="${exercise.variant}" class="text-decoration-none text-secondary"></a>
+                                    </td>
+
+                                    <td>
+                                        <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
+                                                th:text="${exercise.printGymSetFormat()}" class="text-decoration-none text-secondary"></a>
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex">
+                                            <form th:action="@{/app/season/training/exercise/down}" th:method="POST">
+                                                <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
+                                                <input type="hidden" name="trainingId" id="trainingId" th:value="${exercise.trainingId}">
+                                                <button class="ms-1 table-mini-btn">
+                                                    <i class="fa-solid fa-caret-up"></i>
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/app/season/training/exercise/up}" th:method="POST">
+                                                <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
+                                                <input type="hidden" name="trainingId" id="trainingId" th:value="${exercise.trainingId}">
+                                                <button class="ms-1 table-mini-btn">
+                                                    <i class="fa-solid fa-caret-down"></i>
+                                                </button>
+                                            </form>
+
+                                            <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'" class="text-decoration-none   ms-1 table-mini-btn">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </a>
+                                            <form th:action="@{/app/season/training/exercise/delete}" th:method="DELETE">
+                                                <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
+                                                <input type="hidden" name="trainingId" id="trainingId" th:value="${exercise.trainingId}">
+                                                <button onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" class=" ms-1 table-mini-btn">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    
+                        
+
+                        
+                        
+                        <div class="my-5">
+                            <hr >
+                            <form th:action="@{/app/season/training/exercise/create}" th:object="${exerciseForm}" method="POST">
+
+                                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger show-message p-2">
+                                    <ul class="m-0">
+                                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                                    </ul>
+                                </div>
+    
+                                <input type="hidden" th:field="*{trainingId}">
+                                
+                                <div th:replace="~{layout/forms :: exerciseFormTable}"></div>
+    
+                                <button  class="btn btn-sm btn-success" type="submit">
+                                    Añadir Ejercicio<i class="ms-1 fa-solid fa-plus"></i>
+                                </button>
+                            </form>
+                        </div>
+                        
+                    </div>
+    
+    
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Pie de página -->
+
+
     <footer th:replace="~{layout/fragments :: footer}">
 
     </footer>
+
+
 
     <script>
         async function loadExercise(exerciseId) {
@@ -166,7 +215,18 @@
             clearForm();
             document.getElementById('submitExerciseBtn').value='Crear'
         }
+
+
+
+
+
+
+
+        
     </script>
 
 </body>
+
 </html>
+
+    
