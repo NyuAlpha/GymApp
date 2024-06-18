@@ -1,17 +1,21 @@
 package com.victor.project.gymapp.services;
 
-import org.springframework.http.ResponseEntity;
-
+import java.util.List;
 import com.victor.project.gymapp.dto.ExerciseDto;
 import com.victor.project.gymapp.models.Exercise;
 
-public interface IExerciseService extends CrudService {
+
+
+/*
+ * Interfaz de service para manipulación de ejercicios
+ */
+public interface IExerciseService{
 
     Exercise saveExercise(ExerciseDto exerciseDto);
 
     void deleteExercise(Integer id);
 
-    Exercise getFullExerciseById(Integer id);
+    Exercise getExerciseById(Integer id);
 
     Exercise updateExercise(ExerciseDto exerciseDto);
 
@@ -19,5 +23,5 @@ public interface IExerciseService extends CrudService {
 
     void down(Integer exerciseId, Integer trainingId);
 
-    ResponseEntity<?> getExercise(Integer exerciseId);
+    List<String> getExerciseNames(String token);
 }

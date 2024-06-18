@@ -12,23 +12,45 @@ import com.victor.project.gymapp.models.User;
 import com.victor.project.gymapp.models.UserRecord;
 import com.victor.project.gymapp.repositories.UserRecordRepository;
 import com.victor.project.gymapp.repositories.UserRepository;
-
 import lombok.AllArgsConstructor;
 
+
+
+/*
+ * Servicio para manipular y procesar registros de control de usuario
+ */
 @Service
 @AllArgsConstructor
 public class UserRecordService implements IUserRecordService {
 
+    //Repositorios necesarios
     private UserRepository userRepository;
     private UserRecordRepository userRecordRepository;
+    private UserService userService;
 
+
+
+
+
+    /*
+     * Recupera los registros del usuario logeado de forma paginada
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<UserRecord> findAllUserRecord(Pageable pageable) {
-        return userRecordRepository.findByUserUuid(getCurrentUserUuid(), pageable);
+        return userRecordRepository.findByUserUuid(userService.getCurrentUserUuid(), pageable);
     }
 
-    // Crea y guarda un nuevo registro de usuario en la base de datos y lo devuelve.
+
+
+
+
+
+
+
+    /*
+     * Crea y guarda un nuevo registro de usuario en base al dto, luego lo devuelve.
+     */
     @Override
     @Transactional
     public UserRecord saveUserRecord(UserRecordDto userRecordDto) {
@@ -40,7 +62,7 @@ public class UserRecordService implements IUserRecordService {
         UserRecord userRecord = new UserRecord(userRecordDto);
 
         // Obtiene el usuario de la sesión actual para asignarseo al registro
-        User user = userRepository.findByUuid(getCurrentUserUuid())
+        User user = userRepository.findByUuid(userService.getCurrentUserUuid())
                 .orElseThrow(() -> new NoSuchElementException("Usuario actual no encontrado"));
         userRecord.setUser(user);
 
@@ -48,14 +70,33 @@ public class UserRecordService implements IUserRecordService {
         return userRecordRepository.save(userRecord);
     }
 
+
+
+
+
+
+
+
+    /*
+     * Recupera un registro de usuario mediante el id
+     */
     @Override
     @Transactional(readOnly = true)
     public UserRecord getUserRecord(Integer userRecordId) {
         return userRecordRepository.findById(userRecordId).orElseThrow(NoSuchElementException::new);
     }
 
-    // Actualiza el registro de usuario por su id, copiando los datos del dto a la
-    // entidad de bbdd
+
+
+
+
+
+
+
+    
+    /*
+     * Actualiza el registro de usuario por su id, copiando los datos del dto, luego lo devuelve
+     */
     @Override
     @Transactional
     public UserRecord updateUserRecord(UserRecordDto userRecordDto) {
@@ -67,6 +108,14 @@ public class UserRecordService implements IUserRecordService {
         return userRecordRepository.save(userRecord);
     }
 
+
+
+
+
+
+
+
+
     // Elimina el registro de usuario por su id
     @Override
     @Transactional
@@ -74,8 +123,18 @@ public class UserRecordService implements IUserRecordService {
         userRecordRepository.deleteById(userRecordId);// Lo borra
     }
 
+
+
+
+
+
+
+
+    /*
+     * Devuelve el último registro de usuario si hay
+     */
     public UserRecord getLastUserRecordByUser() {
-        return userRecordRepository.findLastByUuid(getCurrentUserUuid()).orElse(new UserRecord());
+        return userRecordRepository.findLastByUuid(userService.getCurrentUserUuid()).orElse(new UserRecord());
     }
 
 }

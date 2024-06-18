@@ -4,16 +4,29 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.ArrayList;
 
+
+
+/*
+ * Renderiza la numeración de páginas
+ */
 public class PageRender<T> {
 
-    private String url;
-    private Page<T> page;
-    private List<PageItem> pages;
+    private String url; //Url para la paginación
+    private Page<T> page; //Pagina
+    private List<PageItem> pages; //Paginas
 
+    //Páginas en total
     private int totalPages;
+    //elementos por página
     private int numElementsPerPage;
+    //Número de la página actual
     private int actualPage;
 
+
+
+    /*
+     * Constructor para crear el page render
+     */
     public PageRender(String url, Page<T> page) {
         this.url = url;
         this.page = page;
@@ -45,12 +58,19 @@ public class PageRender<T> {
             }
         }
 
-
+        //añade las páginas
         for (int i = 0; i < until; i++) {
             pages.add(new PageItem(since+i, actualPage== since+i));
         }
     }
 
+
+
+
+    /*
+     *Métodos getter necesarios para esta clase 
+     */
+    
     public String getUrl() {
         return url;
     }

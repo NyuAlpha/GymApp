@@ -9,31 +9,41 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/*
+ * Representa un entrenamiento de la BBDD en forma de DTO
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 public class TrainingDto {
 
-    private Integer id;
-    private Integer seasonId; //Temporada a la que pertenece
+    private Integer id; //Id del ejercicio
+    private Integer seasonId; //Id de la temporada a la que pertenece
 
+    @NotNull(message = "La fecha no debe estar vacía")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotNull
-    private LocalDate date;
+    private LocalDate date;//Fecha en la que se realiza el entrenamiento
 
-    @Size(max=30, message = "No debe contener más de 30 caracteres")
-    private String title;
+    @Size(max=30, message = "El título no debe contener más de 30 caracteres")
+    private String title;//Titulo del entrenamiento
 
-    @Size(max=100, message = "No debe contener más de 100 caracteres")
-    private String trainingComment;// comentario asociado al entrenamiento, debe cargar siempre
+    @Size(max=255, message = "El comentario no debe contener más de 255 caracteres")
+    private String trainingComment;// comentario asociado al entrenamiento
 
-    private Set<ExerciseDto> exerciseDtos; // Los ejercicios asociados
+    // Los ejercicios asociados
+    private Set<ExerciseDto> exerciseDtos; 
 
+
+
+
+
+    //Crea un TrainingDto con una fecha y un comentario
     public TrainingDto(LocalDate date, String trainingComment) {
         this.date = date;
         this.trainingComment = trainingComment;
     }
 
+    //Crea un TrainingDto con una fecha
     public TrainingDto(LocalDate date) {
         this.date = date;
     }

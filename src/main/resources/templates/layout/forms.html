@@ -5,56 +5,48 @@
 
 <div th:fragment="seasonForm">
     <input type="hidden"  th:field="*{id}">
-    <div class="form-group row my-2">
-        <label class="col-form-label col-sm-2" for="title">Título</label>
-        <div class="col-sm-8 col-xl-6">
-            <input class="form-control" type="text" th:field="*{title}" id="title" minlength="5" maxlength="30"
-                th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''">
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
-        </div>
-        <span class="col-sm-1 text-secondary">Requerido</span>
-    </div>
-
-    <div class="form-group row my-2">
-        <label class="col-form-label col-sm-2" for="startDate">Inicio</label>
-        <div class="col-sm-8 col-xl-6">
-            <input class="form-control" type="date" th:field="*{startDate}" id="startDate">
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></div>
-        </div>
-        <span class="col-sm-1 text-secondary">Requerido</span>
-    </div>
-
-    <div class="form-group row my-2">
-        <label class="col-form-label col-sm-2" for="endDate">Finalización</label>
-        <div class="col-sm-8 col-xl-6">
-            <input class="form-control" type="date" th:field="*{endDate}" id="endDate">
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></div>
-        </div>
-    </div>
-
-    <div class="form-group row my-2">
-        <label class="col-form-label col-sm-2" for="seasonComment">Descripción</label>
-        <div class="col-sm-10 col-xl-8">
-            <textarea class="form-control" type="text" th:field="*{seasonComment}" id="seasonComment" rows="4"
-                maxlength="255" th:classappend="${#fields.hasErrors('seasonComment')} ? 'is-invalid' : ''"></textarea>
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('seasonComment')}" th:errors="*{seasonComment}">
+    <div class="row my-2">
+        
+        <div class="col-sm-6 px-4">
+            <div class="row form-group">
+                <label class="col-form-label" for="title">Título *</label>
+                <input class=" form-control form-control-sm" type="text" th:field="*{title}" id="title" minlength="5" maxlength="30"
+                th:classappend="${#fields.hasErrors('title')} ? 'is-invalid' : ''" required>
+            
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
             </div>
         </div>
+
+        <div class="col-sm-3 px-4">
+            <div class="row form-group">
+                <label class="col-form-label" for="startDate">Inicio *</label>
+                <input class="form-control form-control-sm" type="date" th:field="*{startDate}" id="startDate"
+                th:classappend="${#fields.hasErrors('startDate')} ? 'is-invalid' : ''" required>
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></div>
+            </div>
+        </div>
+
+        <div class="col-sm-3 px-4">
+            <div class="row form-group">
+                <label class="col-form-label" for="endDate">Fin</label>
+                <input class="form-control form-control-sm" type="date" th:field="*{endDate}" id="endDate" 
+                th:classappend="${#fields.hasErrors('endDate')} ? 'is-invalid' : ''">
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></div>   
+            </div>
+        </div>
+        
+        <div class="col-sm-12 px-4">
+            <div class="row form-group">
+                    <label class="col-form-label" for="seasonComment">Comentario</label>
+                    <textarea class="form-control form-control-sm" th:field="*{seasonComment}" id="seasonComment" rows="2"
+                        maxlength="255" th:classappend="${#fields.hasErrors('seasonComment')} ? 'is-invalid' : ''"></textarea>
+                    <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('seasonComment')}" th:errors="*{seasonComment}">
+                    </div>
+            </div>
+        </div>
+
     </div>
 
-
-</div>
-
-
-<div th:fragment="seasonDelete">
-    <form th:action="@{/app/season/delete}" th:method="DELETE">
-        <input type="hidden" name="seasonId" id="seasonId" th:value="${season.id}">
-        <button class="me-1 btn btn-sm btn-danger"
-            onclick="return confirm('¿Estás seguro que deseas eliminar esta temporada?')" type="submit">
-            Eliminar
-            <i class="ms-2 fa-solid fa-trash"></i>
-        </button>
-    </form>
 </div>
 
 
@@ -62,18 +54,9 @@
 
 
 
-
-
-
-
-
-
-
-
-
-<!-- *****************************************************************
-CAMPOS DE FORMULARIO PARA ENTRENAMIENTO
-********************************************************************** -->
+<!-- ****************************************************************
+    CAMPOS DE FORMULARIO PARA LOS ENTRENAMIENTOS
+*******************************************************************-->
 
 
 <div th:fragment="trainingForm">
@@ -81,31 +64,111 @@ CAMPOS DE FORMULARIO PARA ENTRENAMIENTO
     <input type="hidden" id="id" th:field="*{id}">
     <input type="hidden" id="seasonId" th:field="*{seasonId}">
 
-    <div class="form-group row my-2">
-        <label for="date" class="col-sm-1 col-form-label">Fecha</label>
-        <div class="col-sm-3">
-            <input class="form-control" type="date" th:field="*{date}" id="date" required >
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
-        </div>
-        <span class="col-sm-1 text-secondary">*</span>
 
-        <label for="title" class="col-sm-1 offset-sm-1 col-form-label">Título</label>
-        <div class="col-sm-4 ">
-            <input type="text" class="form-control" th:field="*{title}" id="title"></input>
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+
+    <div class="row my-2">
+        
+        <div class="col-sm-5 px-4">
+            <div class="row form-group">
+                <label for="date" class=" col-form-label">Fecha *</label>
+                <input class="form-control form-control-sm" type="date" th:field="*{date}" id="date" required >
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+            </div>
         </div>
-    </div>
-    
-    <div class="form-group row my-2">
-        <label for="trainingComment" class="col-sm-1 col-form-label">Descripción</label>
-        <div class="col-sm-10">
-            <textarea class="form-control" th:field="*{trainingComment}" id="trainingComment" rows="2"></textarea>
-            <div class="alert alert-danger" th:if="${#fields.hasErrors('trainingComment')}" th:errors="*{trainingComment}"></div>
+
+        <div class="col-sm-5 offset-sm-1 px-4">
+            <div class="row form-group">
+                <label for="title" class=" col-form-label">Título</label>
+                <input type="text" maxlength="30" class="form-control form-control-sm" th:field="*{title}" id="title">
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+            </div>
         </div>
+
+        
+        <div class="col-sm-11 px-4">
+            <div class="row form-group">
+                <label for="trainingComment" class="col-form-label">Comentario</label>
+                <textarea class="form-control form-control-sm" maxlength="255" th:field="*{trainingComment}" id="trainingComment" rows="2"></textarea>
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('trainingComment')}" th:errors="*{trainingComment}"></div>
+            </div>
+        </div>
+
     </div>
+
 
 </div>
 
+
+
+
+
+
+
+
+
+<!-- ****************************************************************
+    CAMPOS DE FORMULARIO PARA LOS EJERCICIOS
+*******************************************************************-->
+<div th:fragment="exerciseForm">
+
+    <input type="hidden" id="trainingId" th:field="*{trainingId}">
+    <input type="hidden" id="id" th:field="*{id}">
+
+    <div class="row my-2">
+        
+        <div class="col-sm-5 px-4">
+            <div class="row form-group">
+                <label for="date" class=" col-form-label">Ejercicio *</label>
+                <input class="form-control form-control-sm" type="text" th:field="*{exerciseName}" maxlength="30"
+                            th:classappend="${#fields.hasErrors('exerciseName')} ? 'is-invalid' : ''" required>
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('exerciseName')}" th:errors="*{exerciseName}"></div>
+            </div>
+        </div>
+
+        <div class="col-sm-5 offset-sm-1 px-4">
+            <div class="row form-group">
+                <label for="title" class=" col-form-label">Variante</label>
+                <input class="form-control form-control-sm" type="text" th:field="*{variant}" maxlength="30"
+                            th:classappend="${#fields.hasErrors('variant')} ? 'is-invalid' : ''">
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('variant')}" th:errors="*{variant}"></div>
+            </div>
+        </div>
+
+        
+        <div class="col-sm-11 px-4">
+            <div class="row form-group">
+                <label for="trainingComment" class="col-form-label">Comentario</label>
+                <textarea rows="1" class="form-control form-control-sm" type="text" maxlength="255" th:field="*{exerciseComment}"
+                            th:classappend="${#fields.hasErrors('exerciseComment')} ? 'is-invalid' : ''">
+                </textarea>
+                <div class="alert alert-danger show-message" th:if="${#fields.hasErrors('exerciseComment')}" th:errors="*{exerciseComment}"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--*************************************************************************************************
+                                 FORMULARIOS DELETE, TEMPORADA, TRAINING Y EJERCICIO
+*****************************************************************************************************-->
+
+<div th:fragment="seasonDelete">
+    <form th:action="@{/app/season/delete}" th:method="DELETE">
+        <input type="hidden" name="seasonId" id="seasonId" th:value="${season.id}">
+        <button class="me-2 btn btn-sm btn-danger"
+            onclick="return confirm('¿Estás seguro que deseas eliminar esta temporada?')" type="submit">
+            Eliminar
+            <i class="ms-2 fa-solid fa-trash"></i>
+        </button>
+    </form>
+</div>
 
 
 
@@ -123,50 +186,15 @@ CAMPOS DE FORMULARIO PARA ENTRENAMIENTO
 </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-<div th:fragment="exerciseFormTable">
-    <table class="table table-sm table-bordered table-hover table-success">
-        <thead class="table-success">
-            <tr>
-                <th style="width: 20%;">Ejercicio</th>
-                <th style="width: 15%;">Variante</th>
-                <th >comentario</th>
-            </tr>
-        </thead>
-        <tbody class="text-secondary info-txt">
-            <tr>
-                <td class="p-1">
-                    <input class="border-0 w-100" type="text" th:field="*{exerciseName}"
-                            th:classappend="${#fields.hasErrors('exerciseName')} ? 'is-invalid' : ''">
-                </td>
-
-                <td class="p-1">
-                    <input class="border-0 w-100" type="text" th:field="*{variant}"
-                            th:classappend="${#fields.hasErrors('variant')} ? 'is-invalid' : ''">
-                </td>
-
-                <td class="p-1">
-                    <textarea rows="1" class="border-0 w-100" type="text" th:field="*{exerciseComment}"
-                            th:classappend="${#fields.hasErrors('exerciseComment')} ? 'is-invalid' : ''">
-                    </textarea>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<div th:fragment="exerciseDelete">
+    <form th:action="@{/app/season/training/exercise/delete}" th:method="DELETE">
+        <input type="hidden" name="exerciseId" th:value="${exercise.id}">
+        <input type="hidden" name="trainingId" th:value="${exercise.trainingId}">
+        <button onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" 
+                class=" me-2 btn btn-sm btn-danger">
+            Eliminar<i class=" ms-2 fa-solid fa-trash"></i>
+        </button>
+    </form>
 </div>
-
-
-
-
 
 

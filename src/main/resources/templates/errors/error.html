@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https:\\www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head}">
+
+</head>
+
+<body class="container-fluid d-flex flex-column vh-100 p-0">
+
+    <!-- ====================================*Encabezado*========================================= -->
+    <header th:replace="~{layout/fragments :: header}">
+    </header>
+
+    <!-- ==========================*Sección principal*=============================== -->
+    <div class="d-flex align-items-center p-4">
+            <main >
+                <div>
+                    
+                    <h1><i class="fas fa-exclamation-circle icon me-3" style="font-size: 30px;"></i>Error del Servidor</h1>
+                    <p>Ocurrió un error inesperado.</p>
+                    <p><strong>Status:</strong> <span th:text="${status}"></span></p>
+                    <p><strong>Excepción:</strong> <span th:text="${exceptionName}"></span></p>
+                    <p><strong>Mensaje:</strong> <span th:text="${message}"></span></p>
+                    <div class="stacktrace">
+                        <strong>Pila de Llamadas:</strong>
+                        <div th:each="element : ${stackTrace}">
+                            <span  th:text="${element}"></span>
+                        </div>
+                    </div>
+                    <p class="text-center"><a class="text-decoration-none text-dark" th:href="@{/app/season/list}">Volver al inicio</a></p>
+                </div>
+            </main>
+    </div>
+
+    
+    <!-- ====================================*Footer y scripts*========================================= -->
+    <footer th:replace="~{layout/fragments :: footer}"></footer>
+</body>
+</html>
+
+

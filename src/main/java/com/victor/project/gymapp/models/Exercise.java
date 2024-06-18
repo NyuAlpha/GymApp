@@ -4,7 +4,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,21 +39,21 @@ public class Exercise {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id;//Primary key
 
-    //Orden del ejercicio en el contexto de un entrenamiento
+    //Orden del ejercicio en el contexto de un entrenamiento, es obligatorio, pero se gestiona internamente
     @Column(name = "exercise_order", nullable = false)
     private Byte exerciseOrder;
 
-    @ManyToOne()//Un ejercicio puede tener un solo nombre, pero los nombres pueden estar en muchos ejercicios
+    @ManyToOne()//Un ejercicio debe tener un solo nombre, pero los nombres pueden estar en muchos ejercicios, obligatorio
     @JoinColumn(name="exercise_name_id", nullable = false)
     private ExerciseName exerciseName;
 
     @Column(length = 30)
-    private String variant;//Un ejercicio puede tener variaciones o elementos adicionales
+    private String variant;//Un ejercicio puede tener variaciones o elementos adicionales, no obligatorio
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private ExerciseComment exerciseComment;//comentario asociado a un ejercicio
+    @Column(length = 255, name="exercise_comment")
+    private String exerciseComment;//comentario asociado a un ejercicio, no es obligatorio
 
     @ManyToOne()
     @JoinColumn(name="training_id", nullable = false)
@@ -66,7 +65,25 @@ public class Exercise {
 
 
 
-    /**
+
+
+
+
+    /*
+     * Constructor básico para crear un Ejercicio en base a los datos enviados con el DTO
+     */
+    public Exercise(ExerciseDto exerciseDto){
+        id = null; //Id siempre será nulo al crear un Ejercicio desde 0, será la BBDD quien lo establezca
+        update(exerciseDto); //Se copian el resto de datos
+    }
+
+
+
+
+
+
+
+    /*
      * Convierte el ejercicio en DTO para mostrarlo en una vista
      * El ejercicio SIEMPRE debe devolver las series, ya que están estrechamente vinculadas en las vistas
      */
@@ -83,11 +100,9 @@ public class Exercise {
         
 
         //Campos opcionales, pueden ser null
-        
-        exerciseDto.setVariant(variant);//Se mapea sea nula o no
+        exerciseDto.setVariant(variant);
+        exerciseDto.setExerciseComment(exerciseComment);
 
-        if (exerciseComment != null)//Se verifica si existe antes de acceder a su contenido
-            exerciseDto.setExerciseComment(exerciseComment.getComment());
 
         // Ahora cargamos las series de este ejercicio en caso de que existan
         if (!gymSets.isEmpty()) {
@@ -104,4 +119,27 @@ public class Exercise {
 
         return exerciseDto;
     }
+
+
+
+
+
+
+
+    /*
+     * Actualiza los campos simples de esta entidad en base a los datos del Dto
+     */
+    public void update(ExerciseDto exerciseDto){
+
+
+        //Si vienen vacios se pasan a null en la BBDD
+        String v = exerciseDto.getVariant();
+        variant = (v.isBlank())?  null : v;
+
+        String c = exerciseDto.getExerciseComment();
+        exerciseComment = (c.isBlank())?  null : c;
+
+    }
+
+
 }

@@ -2,29 +2,38 @@ package com.victor.project.gymapp.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import lombok.AllArgsConstructor;
 
 import java.util.Collection;
 
+
+/*
+ * UserDetails para SpringSecurity personalizada para introducir Uuid's
+ */
+@AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
     private final String username;
     private final String password;
     private final boolean isEnabled;
     private final Collection<? extends GrantedAuthority> authorities;
-    private final String uuid;
+    private final String uuid;//Campos añadido
 
-    public CustomUserDetails(String username, String password, boolean isEnabled,
-            Collection<? extends GrantedAuthority> authorities, String uuid) {
-        this.username = username;
-        this.password = password;
-        this.isEnabled = isEnabled;
-        this.authorities = authorities;
-        this.uuid = uuid;
-    }
 
+
+    /*
+     * Devuelve el Uuid
+     */
     public String getUuid() {
         return uuid;
     }
+
+    /*
+     * Métodos getter sobreescritos
+     * 
+     */
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

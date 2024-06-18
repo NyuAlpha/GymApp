@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https:\\www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head}">
+
+</head>
+
+<body class="container-fluid d-flex flex-column vh-100 p-0">
+
+    <!-- ====================================*Encabezado*========================================= -->
+    <header th:replace="~{layout/fragments :: header}">
+    </header>
+
+    <!-- ==========================*Sección principal*=============================== -->
+    <div class="d-flex flex-wrap  align-items-center justify-content-center">
+            <main class="pt-5">
+                <div class="card ">
+                    <div class="card-header bg-dark text-white"><span class="fs-2"><i style="font-size: 30px;" class="fa-solid fa-ban me-3"></i> 403 - Acceso denegado</span></div>
+                    <div class="card-body text-center"><span>No tienes permiso para realizar esta acción</span></div>
+                </div>
+            </main>
+    </div>
+
+
+    <!-- ====================================*Footer y scripts*========================================= -->
+    <footer th:replace="~{layout/fragments :: footer}"></footer>
+</body>
+</html>

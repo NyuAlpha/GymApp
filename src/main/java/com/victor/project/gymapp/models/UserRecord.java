@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.victor.project.gymapp.dto.UserRecordDto;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +18,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+/*
+ * Esta clase representa una entidad de la base de datos y la tabla asociada en ella
+ * Almacena datos de usuario importantes para llevar un control de sus estadísticas
+ * físicas
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,25 +34,47 @@ public class UserRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id;//Primary key
 
+    @Column(nullable = false)
     private Short height;// Altura del usuario
 
+    @Column(nullable = false)
     private Float weight;// Peso del usuario
 
+    @Column(nullable = false)
     private LocalDate date;// Fecha en la que se hace el registro
+
+    @Column(length = 255, name= "user_record_comment")
+    private String userRecordComment;//comentario asociado al registro
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;// Usuario asociado a los detalles de usuario
 
-    // Constructor especializado en transformar un Dto a Entity, copia los datos del
-    // Dto en la Entity
+
+
+
+
+
+
+    /*
+     *Constructor especializado en transformar un Dto a Entity, copia los datos del Dto en la Entity
+     */ 
     public UserRecord(UserRecordDto userRecordDto) {
+        id = null; //Siempre que se crea un UserRecord desde 0 el id es null, será la BBDD quien lo establezca
         update(userRecordDto);
     }
 
-    public UserRecordDto getSimpleDto() {
+
+
+
+
+
+    /*
+     * Convierte los datos de esta entidad a un dto y lo devuelve
+     */
+    public UserRecordDto getDto() {
 
         UserRecordDto userRecordDto = new UserRecordDto();
 
@@ -53,20 +82,28 @@ public class UserRecord {
         userRecordDto.setHeight(height);
         userRecordDto.setWeight(weight);
         userRecordDto.setDate(date);
+        userRecordDto.setUserRecordComment(userRecordComment);
 
         return userRecordDto;
     }
 
-    // Actualiza los campos de esta entidad
-    public void update(UserRecordDto userRecordDto) {
-        // Campos no nulos
-        date = userRecordDto.getDate();
 
-        // Campos que pueden ser nulos
+
+
+    /*
+     * Actualiza los campos de esta entidad en base a un dto
+     */
+    public void update(UserRecordDto userRecordDto) {
+        
+        //Simplemente se mapean los datos
+        date = userRecordDto.getDate();
         height = userRecordDto.getHeight();
         weight = userRecordDto.getWeight();
 
-        System.out.println("Nuevos campos -> " + date.toString() + "   " + height + "   " + weight);
+        //Si viene vacio se establece como null
+        String c = userRecordDto.getUserRecordComment();
+        userRecordComment = (c.isBlank())?  null : c;
+
     }
 
 }

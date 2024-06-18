@@ -7,48 +7,64 @@
 <body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
 
 
-    <header th:replace="~{layout/fragments :: header}">
-    </header>
+    <!-- ====================================*Encabezado*========================================= -->
+    <header th:replace="~{layout/fragments :: header}"></header>
+    
 
 
+
+    <!-- ==========================*Sección principal*=============================== -->
     <div class="flex-grow-1 d-flex">
-
-        <aside th:replace="~{layout/fragments :: aside}">
-        </aside>
+            
 
 
+
+
+
+        <!-- ==========================*Aside común a la app, aparece a la izquierda*=============================== -->
+        <aside th:replace="~{layout/fragments :: aside}"></aside>
+
+
+
+
+
+
+        <!--============ Contenido central, el contenido de cada sección está aqui =============-->
         <main class="col-md-9 col-12 p-3">
 
-            <div class="alert  alert-success show-message p-2" th:if="${successTraining}" th:text="${successTraining}"></div>
-            <div class="card my-2 ">
+            <!-- Mensajes informativos de exito -->
+            <div class="alert  alert-success show-message" th:if="${success}" th:text="${success}"></div>
 
-                <h4 class="card-header" th:if="${!training.title.isEmpty()}" th:text="${training.title}"></h4>
-                <h4 class="card-header" th:if="${training.title.isEmpty()}" >Entrenamiento</h4>
 
+            <!-- **************************************
+                    SECCION DE ENTRENAMIENTO              
+            **************************************** -->
+            <!-- Datos del entrenamiento -->
+            <div class="card my-2 card-info border-primary">
+
+                <!-- Los titulos varian dependiendo de si hay título o no -->
+                <h4 class="card-header" th:if="${training.title}" th:text="'Entrenamiento de ' + ${training.title}"></h4>
+                <h4 class="card-header" th:if="${training.title==null}" >Entrenamiento</h4>
+
+                <!-- Resto de datos -->
                 <div class="card-body">
 
-                    <div>
+                    <div class="my-2">
                         <span>Realizado el: </span><h5 class="d-inline ms-2" th:text="${training.date}"></h5>
                     </div>
 
-                    <div class="my-3" th:if="${training.trainingComment}">
-                        <span colspan="2"  th:text="${training.trainingComment}"></span>
+                    <div th:if="${training.trainingComment}">
+                        <span th:text="${training.trainingComment}"></span>
                     </div>
                     
-                    <div class="d-flex">
+                    <!-- Sección de acciones, editar, borrar y volver del entrenamiento -->
+                    <div class="d-flex mt-3">
 
                         <a class="btn btn-sm btn-primary me-2" th:href="@{/app/season/training/} + ${trainingId} + '/update'">
                             Editar<i class=" ms-2 fa-solid fa-pen-to-square"></i>
                         </a>
 
-                        <form th:action="@{/app/season/training/delete}"  th:method="DELETE">
-                            <input type="hidden" name="trainingId" id="trainingId" th:value="${training.id}">
-                            <input type="hidden" name="seasonId" id="seasonId" th:value="${training.seasonId}">
-                            <button type="submit" class="btn btn-sm btn-danger me-2 " 
-                                        onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar
-                                <i class="ms-2 fa-solid fa-trash"></i>
-                            </button>
-                        </form>
+                        <div th:replace="~{layout/forms :: trainingDelete}"></div>
 
                         <a class="btn btn-sm btn-secondary me-2" th:href="@{/app/season/} + ${training.seasonId} + '/show'">
                             Volver<i class=" ms-2 fa-solid fa-rotate-left"></i>
@@ -62,168 +78,143 @@
             </div>
 
             
-            <div class="mt-4">
-                <div class="my-4">
-                    <h6 class="mt-4"> Ejercicios</h6>
-    
-                    <div class="alert alert-success show-message p-2" th:if="${successExercise}" th:text="${successExercise}"></div>
-    
-                    <div class="table-responsive">
-                        
-                        <table class=" table table-sm table-bordered table-hover table-light">
-                            <thead class="table-primary">
-                                <tr >
-                                    <th style="width: 20%;">Ejercicio</th>
-                                    <th style="width: 15%;">Variante</th>
-                                    <th style="width: 55%;">Series</th>
-                                    <th style="width: 10%;">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-secondary info-txt">
-                                <tr th:if="${exerciseDtos.isEmpty()}"><td colspan="4">No hay ejercicios aun</td></tr>
-                                <tr th:if="${!exerciseDtos.isEmpty()}" th:each="exercise : ${exerciseDtos}">
-                                    <td class="d-flex justify-content-between m-0">
-                                        <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
-                                                th:text="${exercise.exerciseName}" class="text-decoration-none text-secondary"></a>
-                                        <span class="me-2 table-mini-btn text-secondary" th:if="${exercise.exerciseComment}" data-bs-toggle="tooltip" th:title="${exercise.exerciseComment}">
-                                            <i class="fa-solid fa-comment"></i>
-                                        </span>
-                                    </td>
 
-                                    <td>
-                                        <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
-                                                th:text="${exercise.variant}" class="text-decoration-none text-secondary"></a>
-                                    </td>
 
-                                    <td>
-                                        <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
-                                                th:text="${exercise.printGymSetFormat()}" class="text-decoration-none text-secondary"></a>
-                                    </td>
+            <!--============ Separador vacio para dividir secciones =============-->
+            <div class="vertical-separator"></div>
+            <hr>
 
-                                    <td>
-                                        <div class="d-flex">
-                                            <form th:action="@{/app/season/training/exercise/down}" th:method="POST">
-                                                <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
-                                                <input type="hidden" name="trainingId" id="trainingId" th:value="${exercise.trainingId}">
-                                                <button class="ms-1 table-mini-btn">
-                                                    <i class="fa-solid fa-caret-up"></i>
-                                                </button>
-                                            </form>
-                                            <form th:action="@{/app/season/training/exercise/up}" th:method="POST">
-                                                <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
-                                                <input type="hidden" name="trainingId" id="trainingId" th:value="${exercise.trainingId}">
-                                                <button class="ms-1 table-mini-btn">
-                                                    <i class="fa-solid fa-caret-down"></i>
-                                                </button>
-                                            </form>
 
-                                            <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'" class="text-decoration-none   ms-1 table-mini-btn">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </a>
-                                            <form th:action="@{/app/season/training/exercise/delete}" th:method="DELETE">
-                                                <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
-                                                <input type="hidden" name="trainingId" id="trainingId" th:value="${exercise.trainingId}">
-                                                <button onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" class=" ms-1 table-mini-btn">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    
-                        
 
-                        
-                        
-                        <div class="my-5">
-                            <hr >
-                            <form th:action="@{/app/season/training/exercise/create}" th:object="${exerciseForm}" method="POST">
 
-                                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger show-message p-2">
-                                    <ul class="m-0">
-                                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
-                                    </ul>
+            <!-- **************************************
+                SECCION DE EJERCICIOS              
+            **************************************** -->
+            <!-- Muestra los ejercicios en un tabla si existen, además cada registro son enlaces al ejercicio -->
+            <h4 class="mt-4"> Ejercicios</h4>
+
+            <div class="table-responsive">
+                
+                <table class=" table table-sm table-bordered table-hover border-primary table-light">
+
+                    <!-- Encabezado de la tabla -->
+                    <thead class="table-primary border-primary">
+                        <tr >
+                            <th style="width: 20%;">Ejercicio</th>
+                            <th style="width: 15%;">Variante</th>
+                            <th style="width: 55%;">Series</th>
+                            <th style="width: 10%;">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Cuerpo de la tabla -->
+                    <tbody class="text-secondary info-txt">
+
+                        <!-- Si no hay ejercicios se muestra el texto en toda la fila -->
+                        <tr th:if="${exerciseDtos.isEmpty()}"><td colspan="4">No hay ejercicios aun</td></tr>
+
+                        <!-- Si hay ejercicios se muestran en cada fila -->
+                        <tr th:if="${!exerciseDtos.isEmpty()}" th:each="exercise : ${exerciseDtos}">
+                            <td>
+
+                                <div class="d-flex justify-content-between m-0">
+                                    <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
+                                    th:text="${exercise.exerciseName}" class="text-decoration-none text-secondary"></a>
+
+                                    <span class="me-2 table-mini-btn text-secondary" th:if="${exercise.exerciseComment}" data-bs-toggle="tooltip" th:title="${exercise.exerciseComment}">
+                                        <i class="fa-solid fa-comment"></i>
+                                    </span>
                                 </div>
-    
-                                <input type="hidden" th:field="*{trainingId}">
                                 
-                                <div th:replace="~{layout/forms :: exerciseFormTable}"></div>
-    
-                                <button  class="btn btn-sm btn-success" type="submit">
-                                    Añadir Ejercicio<i class="ms-1 fa-solid fa-plus"></i>
-                                </button>
-                            </form>
-                        </div>
-                        
-                    </div>
-    
-    
+                            </td>
+
+                            <td>
+                                <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
+                                        th:text="${exercise.variant}" class="text-decoration-none text-secondary"></a>
+                            </td>
+
+                            <td>
+                                <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'"
+                                        th:text="${exercise.printGymSetFormat()}" class="text-decoration-none text-secondary"></a>
+                            </td>
+
+                            <!-- Esta columna son las acciones para cada registro de ejercicio,ascender y descender una posición, 
+                                 editar y borrar-->
+                            <td>
+                                <div class="d-flex">
+                                    <form th:action="@{/app/season/training/exercise/down}" th:method="POST">
+                                        <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
+                                        <input type="hidden" name="trainingId" id="trainingId" th:value="${exercise.trainingId}">
+                                        <button class="ms-1 table-mini-btn">
+                                            <i class="fa-solid fa-caret-up"></i>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/app/season/training/exercise/up}" th:method="POST">
+                                        <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
+                                        <input type="hidden" name="trainingId" id="trainingId" th:value="${exercise.trainingId}">
+                                        <button class="ms-1 table-mini-btn">
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </button>
+                                    </form>
+
+                                    <a th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'" class="text-decoration-none   ms-1 table-mini-btn">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+
+                                    <form th:action="@{/app/season/training/exercise/delete}" th:method="DELETE">
+                                        <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
+                                        <button onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" class=" ms-1 table-mini-btn">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+
+
+
+            <!--============ Separador vacio para dividir secciones =============-->
+            <div class="vertical-separator"></div>
+            <hr>
+
+
+
+
+
+            <!-- Formulario de creación de ejercicio -->
+            <div class="card border-secondary card-form">
+
+                <h4 class="card-header">Crear ejercicio</h4>
+                
+                <div class="card-body">
+                    <form id="createTrainingForm" th:action="@{/app/season/training/exercise/create}" th:object="${exercise}" method="post">
+                        <!-- Inyecta los datos del formulario -->
+                        <div th:replace="~{layout/forms :: exerciseForm}"></div>
+                    </form>
                 </div>
             </div>
+            <!-- Botón de creación, referencia al formulario de creación -->
+            <div class="d-flex my-3">
+                <button form="createTrainingForm" type="submit" class="btn btn-sm btn-success me-2">
+                    Añadir ejercicio<i class=" ms-2 fa-solid fa-plus"></i>
+                </button>
+            </div>
+    
         </main>
     </div>
 
 
 
-    <footer th:replace="~{layout/fragments :: footer}">
-
-    </footer>
-
+    <!-- ====================================*Footer y scripts*========================================= -->
+    <footer th:replace="~{layout/fragments :: footer}"></footer>
 
 
-    <script>
-        async function loadExercise(exerciseId) {
-            try {
-                // Llamada a la API para obtener los datos del ejercicio
-                const response = await fetch(`/app/exercise/${exerciseId}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok ' + response.statusText);
-                }
-                const exercise = await response.json();
-                //Limpiar antes de mostrar
-                clearForm();
-                // Asignar los datos a los campos del formulario
-                document.getElementById('exerciseName').value = exercise.exerciseName;
-                document.getElementById('variant').value = exercise.variant;
-                document.getElementById('exerciseComment').value = exercise.exerciseComment;
-    
-                //document.querySelector('input[name="id"]').value = exercise.id;
-                document.getElementById('exerciseId').value = exercise.id;
-
-                document.getElementById('submitExerciseBtn').value='Guardar cambios'
-    
-            } catch (error) {
-                console.error('There was a problem with the fetch operation:', error);
-            }
-        }
-
-        
-
-
-        // Función para limpiar el formulario
-        function clearForm() {
-        document.getElementById('exerciseId').value = '';
-        document.getElementById('exerciseName').value = '';
-        document.getElementById('variant').value = '';
-        document.getElementById('exerciseComment').value = '';
-        }
-
-        //Función para mostrar el formulario de creación de ejercicios
-        function showCreateForm(){
-            clearForm();
-            document.getElementById('submitExerciseBtn').value='Crear'
-        }
-
-
-
-
-
-
-
-        
-    </script>
 
 </body>
 

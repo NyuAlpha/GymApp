@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{layout/fragments :: head}">
 </head>
-
-<body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
     
+<body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
+        
 
     <!-- ====================================*Encabezado*========================================= -->
     <header th:replace="~{layout/fragments :: header}"></header>
@@ -24,52 +25,55 @@
         <aside th:replace="~{layout/fragments :: aside}"></aside>
 
 
-        
-        
+            
+
 
         <!--============ Contenido central, el contenido de cada sección está aqui =============-->
         <main class="col-md-9 col-12 p-3">
 
 
-
-            <!-- **************************************
-                 FORMULARIO DE EDICIÓN DE TEMPORADA              
-            **************************************** -->
-            <!-- Muestra el formulario de actualización de la temporada -->
+            <!-- *****************************
+                 FORMULARIO DE EJERCICIO               
+            ******************************** -->
+            <!-- Muestra el formulario de edición -->
             <div class="card border-secondary card-form">
 
+                <h4 class="card-header">Editor de ejercicio</h4>
                 
-                <h4 class="card-header">Editor de Temporada</h4>
-                
-                <!-- Formulario -->
                 <div class="card-body">
-                    <form id="updateSeasonForm" class="my-3" th:action="@{/app/season/update}" th:object="${season}" th:method="put">
+                    <form id="createexerciseForm" th:action="@{/app/season/training/exercise/update}" th:object="${exercise}" th:method="PUT">
                         <!-- inyecta los campos del formulario-->
-                        <div th:replace="~{layout/forms :: seasonForm}"></div>
+                        <div th:replace="~{layout/forms :: exerciseForm}"></div>
                     </form>
                 </div>
 
             </div>
 
-            <!-- Panel de acciones, guardar, eliminar y volver a la temporada -->
-            <div class="my-3 d-flex">
-                <button form="updateSeasonForm" type="submit" class="btn  btn-sm btn-primary me-2">
+            <!-- Panel de acciones guardar, eliminar y volver de ejercicio -->
+            <div class="d-flex my-4">
+                
+                <button type="submit" form="createexerciseForm" class="btn btn-sm btn-primary me-2">
                     Guardar<i class=" ms-2 fa-solid fa-floppy-disk"></i>
                 </button>
 
-                <div th:replace="~{layout/forms :: seasonDelete}"></div>
+                <div th:replace="~{layout/forms :: exerciseDelete}"></div>
 
-                <a class="btn btn-sm btn-secondary" th:href="@{/app/season/} + ${season.id} + '/show'">Volver<i class=" ms-2 fa-solid fa-rotate-left"></i></a>
+                <a class="btn btn-sm btn-secondary me-2" th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/show'">
+                    Volver<i class=" ms-2 fa-solid fa-rotate-left"></i>
+                </a>
             </div>
+
+
         </main>
     </div>
 
     
 
 
+
+
     <!-- ====================================*Footer y scripts*========================================= -->
     <footer th:replace="~{layout/fragments :: footer}"></footer>
-
 
 
 </body>

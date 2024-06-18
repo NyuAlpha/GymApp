@@ -1,32 +1,68 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
+
+
+<!--*************************************************************************************************
+                                 HEAD DE TODOS LOS HTML
+*****************************************************************************************************-->
+
 <head th:fragment="head">
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymApp</title>
+    <!-- Bootstrap 5 e inconos de la app -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+
+
+    <!-- CSS COMÚN A TODA LA APP -->
     <style>
 
-        textarea{
-            resize: none;
-        }
-
         /* Pequeña modificación de la clase de Bootstrap */
-        .card-header{
-            background-color: #ddd;
+        .card-form .card-header{
+            background-color: #777;
+        }
+        .card-form .card-body{
+            background-color: #bbb;
         }
 
-        .alert{
-            padding: 0;
+        .card-info .card-header{
+            background-color: #abf;
         }
+        .card-info .card-body{
+            background-color: #def;
+        }
+
+
+        /* Separador vertical para separar secciones */
+        .vertical-separator{
+            min-height: 60px;
+        }
+
+        /* Modificación de clase de Bootstrap 5 */
+        .show-message{
+            padding: 1em;
+        }
+
+        /* remarca la sección al pasar con el cursor */
+        .hover-highlight:hover{
+            font-weight: bold;
+            cursor: pointer; 
+        }
+
         
-         i{
-            font-size: 16px;
-         }
+        /* iconos de la app */
+        i{
+        font-size: 16px;
+        }
 
-         .table-mini-btn{
+        /* Botones en tablas */
+        .table-mini-btn{
             cursor: pointer;
             border: none;
             padding: 0.7px;
@@ -36,6 +72,7 @@
             
         }
 
+        /* Botones en tablas al pasar por encima */
         .table-mini-btn:hover{
             cursor: pointer;
             border: none;
@@ -48,51 +85,72 @@
             
         }
 
+        /* Inputs numéricos de la app */
         .w-set-input{
-            width: 65px;
+            width: 60px;
             min-height: 22px;
             height: 22px;
             font-size: 14px; /* Ajusta el tamaño de la fuente si es necesario */
         }
 
-        /* Tamaño de fuente predeterminado para pantallas grandes */
-        .info-txt {
+        /* Los textarea no se redimensionan */
+        textarea{
+            resize: none;
+        }
+
+        /* si hay un text area en una tabla este es más pequeño */
+        .table-textarea{
+            width: 100%;
+            min-height: 22px;
+            height: 22px;
             font-size: 14px;
         }
 
-        /* Tamaño de fuente para pantallas pequeñas */
-        @media (max-width: 767px) {
-            .info-txt {
-                font-size: 12px;
-            }
-
-            i{
-            font-size: 16px;
-            }
-
-            .w-set-input{
-                width: 50px;
-                font-size: 12px; /* Ajusta el tamaño de la fuente si es necesario */
-            }
+        /* Tamaño de fuente predeterminado para pantallas grandes */
+        .info-txt {
+            font-size: 13px;
         }
 
-
-
-
-
+        /* Menú lateral de la app */
         #asideMenu {
             background-color: #ddd;
             height: 100%;
             transition: transform 0.3s ease;
         }
 
+
+
+        /*para pantallas pequeñas */
         @media (max-width: 767px) {
+
+            /* Tamaño de texto pequeño */
+            .info-txt {
+                font-size: 12px;
+            }
+
+            /* Iconos más pequeños */
+            i{
+                font-size: 16px;
+            }
+
+            /* Inputs numéricos más pequeños */
+            .w-set-input{
+                width: 40px;
+                font-size: 12px;
+            }
+
+            /* la fuente de los texarea de tablas será más pequeña */
+            .table-textarea{
+                font-size: 12px;
+            }
+        
+            /* Menú lateral cambia su comportamiento en pantallas pequeñas, siendo un desplegable ocultable*/
             #asideMenu {
                 position: fixed;
                 z-index: 1050;
                 transform: translateX(-100%);
             }
-
+            /* Pone el aside desplegable en pantalla, mostrandose en el lado al desplegarlo*/
             #asideMenu.show {
                 transform: translateX(0);
             }
@@ -101,7 +159,9 @@
     </style>
 
 
+    <!-- Scripts comunes de la app -->
     <script>
+
         // JavaScript para eliminar los mensajes de error y exito después de 10 segundos
         document.addEventListener("DOMContentLoaded", function() {
             setTimeout(function() {
@@ -118,62 +178,78 @@
 
 
 
+        /*
+        * Javascript para modo de prueba, para testear las validaciones del backend sin que las del frontend molesten
+        */
         document.addEventListener('DOMContentLoaded', function () {
                     
             //Para probar las validaciones en el backend  se deshabilitan las limitaciones
-            const isTestMode = false; // Cambia esto a false en producción
+            const isTestMode = false;
             
-
             if (isTestMode) {
                 console.log("MODO TEST VALIDATION")
                 const inputs = document.querySelectorAll('input');
                 inputs.forEach(input => {
-                    input.t
                     input.removeAttribute('required');
                     input.removeAttribute('min');
                     input.removeAttribute('max');
                     input.removeAttribute('pattern');
+                    input.removeAttribute('maxlength');
+                    input.removeAttribute('minlength');
 
                     if (input.type !== 'hidden' && input.type !== 'checkbox') { // Excluir los inputs hidden
                         input.type = 'text';
                     }
                 });
+
+                const textAreas = document.querySelectorAll('textarea');
+                textAreas.forEach(txtArea => {
+                    txtArea.removeAttribute('maxlength');
+                    txtArea.removeAttribute('minlength');
+                });
             }
         })
-
-
-
-
-
     </script>
-
-
 
 </head>
 
 
 
 
+
+
+
+
+
+
+
+<!--*************************************************************************************************
+                                 BODY DE LOS HTML
+*****************************************************************************************************-->
+
 <body>
 
-    <!-- Cabecera -->
+
+    <!--*************************************************************************************************
+                                 CABECERA DE TODOS LOS HTML
+    *****************************************************************************************************-->
     <header th:fragment="header" class="">
-        <nav class="navbar navbar-expand-lg navbar-warning bg-warning text-white p-1">
+        <nav class="navbar navbar-expand-lg navbar-warning bg-dark text-white p-1">
             <div class="container-fluid">
-                <button class="navbar-toggler me-2 d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#asideMenu"
+                <button class="navbar-toggler me-2 d-md-none text-white" type="button" data-bs-toggle="collapse" data-bs-target="#asideMenu"
                     aria-controls="asideMenu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 <span class="navbar-brand fs-2" href="#">GymApp</span>
 
-                <div class="ms-auto me-3">
+                <div class="ms-auto me-1">
                     <div class="dropdown">
-                        <a sec:authorize="isAuthenticated()" class="btn btn-warning dropdown-toggle" href="#"
+                        <a sec:authorize="isAuthenticated()" class="btn btn-secondary dropdown-toggle" href="#"
                             role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa-solid fa-user me-2"></i><span sec:authentication="name"></span>
                         </a>
 
-                        <ul class="dropdown-menu bg-warning" aria-labelledby="dropdownMenuLink">
+                        <ul class="dropdown-menu btn-secondary" aria-labelledby="dropdownMenuLink">
                             <li>
                                 <form th:action="@{/logout}" method="POST" href="#">
                                     <button class="dropdown-item" type="submit"><i
@@ -181,7 +257,7 @@
                                 </form>
                             </li>
                             <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-item"
-                                    th:href="@{/admin/control}"><i class="fa-solid fa-gear me-2"></i>Gestionar App</a>
+                                    th:href="@{/admin/control}"><i class="fa-solid fa-gear me-2"></i>Gestión</a>
                             </li>
                         </ul>
                     </div>
@@ -190,26 +266,48 @@
         </nav>
     </header>
 
-    <aside th:fragment="aside" id="asideMenu" class="col-xl-2 col-md-3  d-md-block collapse p-4"
-        style="background-color: #ddd;">
-        <h4>Menú</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/app/season/list}">Temporadas</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" th:href="@{/app/user_record/list}">Estadísticas de usuario</a>
-            </li>
-        </ul>
+
+
+
+
+
+
+    <!--*************************************************************************************************
+                                 MENÚ LATERAL DESPLEGABLE TODOS LOS HTML
+    *****************************************************************************************************-->
+    <aside th:fragment="aside" id="asideMenu" class="col-xl-2 col-md-3  d-md-block collapse px-2 py-4 border-end border-2 border-dark"
+        style="background-color: #444; min-width: 250px;">
+        <div class="nav flex-column">
+            <div class="nav-item ">
+                <a class="nav-link text-white  hover-highlight" th:href="@{/app/season/list}">Temporadas <i class="ms-2 fa-regular fa-calendar"></i></a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link text-white  hover-highlight" th:href="@{/app/user_record/list}">Estadísticas de usuario<i class="ms-2 fa-solid fa-chart-line"></i></a>
+            </div>
+        </div>
     </aside>
 
+
+
+
+
+
+
+    
+    <!--*************************************************************************************************
+                                 FOORTER DE TODOS LOS HTML
+    *****************************************************************************************************-->
     <footer th:fragment="foorter" class="bg-dark text-white text-center py-3 mt-auto">
+
+        <!-- Mensaje del footer -->
         <span>© 2024 GymApp. Gracias por visitar.</span>
 
+        <!-- JQuery para Scripts -->
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <!-- JavaScript de Bootstrap -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+
     </footer>
 
 </body>

@@ -3,6 +3,9 @@ package com.victor.project.gymapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/*
+ * Clase de configuración principal por defecto
+ */
 @SpringBootApplication
 public class GymappApplication {
 

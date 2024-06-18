@@ -1,8 +1,14 @@
 package com.victor.project.gymapp.services;
 
 import com.victor.project.gymapp.dto.GymSetDto;
+import com.victor.project.gymapp.models.GymSet;
 
-public interface IGymSetService extends CrudService {
+
+
+/*
+ * Interfaz de service para manipulación de series
+ */
+public interface IGymSetService {
 
     void saveGymSet(GymSetDto setDto);
 
@@ -13,4 +19,6 @@ public interface IGymSetService extends CrudService {
     void up(Integer exerciseId, Byte setOrder);
 
     void down(Integer exerciseId, Byte setOrder);
+
+    GymSet getLastGymSet(Integer exerciseId);
 }

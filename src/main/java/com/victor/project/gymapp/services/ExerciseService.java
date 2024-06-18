@@ -1,125 +1,69 @@
 package com.victor.project.gymapp.services;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.victor.project.gymapp.dto.ExerciseDto;
 import com.victor.project.gymapp.models.Exercise;
-import com.victor.project.gymapp.models.ExerciseComment;
 import com.victor.project.gymapp.models.ExerciseName;
 import com.victor.project.gymapp.models.Training;
 import com.victor.project.gymapp.repositories.ExerciseNameRepository;
 import com.victor.project.gymapp.repositories.ExerciseRepository;
 import com.victor.project.gymapp.repositories.TrainingRepository;
 
+import lombok.AllArgsConstructor;
+
+/*
+ * Servicio para manipulación de ejercicios
+ */
 @Service
+@AllArgsConstructor
 public class ExerciseService implements IExerciseService {
 
+
+
+    //Repositorios
     private ExerciseRepository exerciseRepository;
     private ExerciseNameRepository exerciseNameRepository;
     private TrainingRepository trainingRepository;
 
-    public ExerciseService(ExerciseRepository exerciseRepository,
-            ExerciseNameRepository exerciseNameRepository,
-            TrainingRepository trainingRepository) {
-        this.exerciseRepository = exerciseRepository;
-        this.exerciseNameRepository = exerciseNameRepository;
-        this.trainingRepository = trainingRepository;
-    }
-
-    @Override
-    @Transactional
-    public Exercise updateExercise(ExerciseDto exerciseDto) {
-
-        // Obtenemos el ejercicio mediante id, si existe, se actualizan sus campos
-        Exercise exercise = exerciseRepository.findById(exerciseDto.getId()).orElseThrow(NoSuchElementException::new);
-
-        // Ahora se le asigna el nombre del ejercicio, como no puede estar vacio no hace
-        // falta comprobar
-        Optional<ExerciseName> optionalExerciseName = exerciseNameRepository.findByName(exerciseDto.getExerciseName());
-        ExerciseName exerciseName;
-
-        // Si no existe un ejercicio con ese nombre lo crea, si existe lo asigna
-        if (optionalExerciseName.isEmpty())
-            exerciseName = exerciseNameRepository.save(new ExerciseName(null, exerciseDto.getExerciseName()));
-        else
-            exerciseName = optionalExerciseName.get();
-
-        // Se asigna el nombre al ejercicio
-        exercise.setExerciseName(exerciseName);
-
-        // Si el comentario no viene vacio entonces se crea un nuevo comentario.
-        if (!exerciseDto.getExerciseComment().isBlank()){
-
-            // Si ya tenía un comentario asignado simplemente se modifica el texto
-            if (exercise.getExerciseComment() != null) {
-                exercise.getExerciseComment().setComment(exerciseDto.getExerciseComment());
-            } else {
-                // Si no se crea un nuevo comentario
-                exercise.setExerciseComment(new ExerciseComment(exerciseDto.getExerciseComment()));
-            }
-        }
-        // Si el comentario viene vacio será null
-        else
-            exercise.setExerciseComment(null);
 
 
 
-        exercise.setVariant(exerciseDto.getVariant());
-
-        return exerciseRepository.save(exercise);
-    }
-
-    @Override
-    @Transactional
-    public Exercise getFullExerciseById(Integer id) {
-
-        Optional<Exercise> optionalExercise = exerciseRepository.findByIdWithDetails(id);
-        Exercise exercise = optionalExercise.orElseThrow(NoSuchElementException::new);
-
-        return exercise;
-    }
 
 
-    
 
+
+    /*
+     * Procesa y guarda el ejercicio en la base de datos, usa el dto
+     * para establecer los campos, luego lo devuelve
+     */
     @Override
     @Transactional
     public Exercise saveExercise(ExerciseDto exerciseDto) {
 
-        Exercise exercise = new Exercise();
-        Training training = trainingRepository.findById(exerciseDto.getTrainingId()).orElseThrow();
+        //Se crea un nuevo ejercicio en base al dto
+        Exercise exercise = new Exercise(exerciseDto);
+        
+        //Se le da un entrenamiento padre en base al id padre que contenga
+        Training training = trainingRepository.findById(exerciseDto.getTrainingId()).orElseThrow(NoSuchElementException::new);
         exercise.setTraining(training);
 
-        
-        // Si no existe un ejercicio con ese nombre lo crea, si existe lo asigna
-        Optional<ExerciseName> optionalExerciseName = exerciseNameRepository.findByName(exerciseDto.getExerciseName());
-        ExerciseName exerciseName = null;
-        if (optionalExerciseName.isEmpty()) {
-            exerciseName = exerciseNameRepository.save(new ExerciseName(null, exerciseDto.getExerciseName()));
-        } else {
-            exerciseName = optionalExerciseName.get();
+        //Se asigna el nombre, pero primero se comprueba si existe, si no existe se crea uno nuevo y se persiste
+        // antes de asignarse
+        String name = exerciseDto.getExerciseName();
+        Optional<ExerciseName> optionalExerciseName = exerciseNameRepository.findByName(name);
+        if(optionalExerciseName.isPresent()){
+            exercise.setExerciseName(optionalExerciseName.get());
+        }else{
+            ExerciseName en = exerciseNameRepository.save(new ExerciseName(name));
+            exercise.setExerciseName(en);
         }
-        // finalmente se asigna
-        exercise.setExerciseName(exerciseName);
-
-
-        // Si tiene un comentario y no está vacio entonces se crea un nuevo comentario.
-        if (!exerciseDto.getExerciseComment().isBlank())
-            exercise.setExerciseComment(new ExerciseComment(exerciseDto.getExerciseComment()));
-
-        exercise.setVariant(exerciseDto.getVariant());
-
 
 
         //Por último, se calcula cuantos ejercicios hay en el entrenamiento para darle una posición al nuevo
@@ -130,12 +74,84 @@ public class ExerciseService implements IExerciseService {
 
     }
 
+
+
+
+
+
+
+
+    /*
+     * Regresa un ejercicio si lo encuentra, lo busca por su id
+     */
+    @Override
+    @Transactional
+    public Exercise getExerciseById(Integer id) {
+
+        Optional<Exercise> optionalExercise = exerciseRepository.findByIdWithDetails(id);
+        Exercise exercise = optionalExercise.orElseThrow(NoSuchElementException::new);
+
+        return exercise;
+    }
+
+
+
+
+
+
+
+
+
+    /*
+     * Actualiza un ejercicio con los datos enviados en el dto,
+     * luego lo devuelve
+     */
+    @Override
+    @Transactional
+    public Exercise updateExercise(ExerciseDto exerciseDto) {
+
+        // Obtenemos el ejercicio mediante id, si existe, se actualizan sus campos
+        Exercise exercise = exerciseRepository.findById(exerciseDto.getId()).orElseThrow(NoSuchElementException::new);
+        //Se actualizan sus campos mediante el dto
+        exercise.update(exerciseDto);
+
+        return exerciseRepository.save(exercise);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+     * Borra el ejercicio por el id
+     */
     @Override
     @Transactional
     public void deleteExercise(Integer id) {
         exerciseRepository.deleteById(id);
     }
 
+
+
+
+
+
+
+
+
+
+
+    /*
+     * Baja un ejercicio de posición en la lista de ejercicios
+     */
     @Override
     @Transactional
     public void down(Integer exerciseId, Integer trainingId) {
@@ -161,6 +177,19 @@ public class ExerciseService implements IExerciseService {
         
     }
 
+
+
+
+
+
+
+
+
+
+
+    /*
+     * sube un ejercicio de posición en la lista de ejercicios
+     */
     @Override
     @Transactional
     public void up(Integer exerciseId, Integer trainingId) {
@@ -188,21 +217,21 @@ public class ExerciseService implements IExerciseService {
 
 
 
-    public ResponseEntity<?> getExercise(Integer exerciseId){
 
-        Optional<Exercise> optionalExercise =  exerciseRepository.findById(exerciseId);
 
-        if(optionalExercise.isPresent()){
-            return ResponseEntity.ok().body(optionalExercise.get().getDto());
-        }
-        else{
-            Map<String,String> errors = new HashMap<>();
-            errors.put("error","not_found");
-            errors.put("message","Recurso no encontrado");
-            errors.put("date",LocalDateTime.now().toString());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(errors);
-        }
+
+
+
+    /*
+     * Obtiene nombres de ejercicios que empiezan por el token
+     */
+    @Override
+    @Transactional
+    public List<String> getExerciseNames(String token) {
+        return exerciseNameRepository.findAllLikeName(token);
     }
+
+
 
     
 }

@@ -5,116 +5,181 @@
 </head>
 
 <body class="container-fluid d-flex flex-column vh-100 p-0 m-0"></body>
-<!-- Cabecera -->
-<header th:replace="~{layout/fragments :: header}">
-</header>
-
-<!-- Estructura principal del cuerpo de la página -->
-<div class="flex-grow-1 d-flex">
-
-    <aside th:replace="~{layout/fragments :: aside}">
-    </aside>
 
 
-    <main class="col-md-9 col-12 p-3">
+    <!-- ====================================*Encabezado*========================================= -->
+    <header th:replace="~{layout/fragments :: header}"></header>
 
-        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
-        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
-            <div class="mb-5">
-                <h2>Estadísticas y control de <span sec:authentication="name"></span></h2>
-            </div>
-            
-            <div th:if="${!userRecords.isEmpty()}">
-                <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
-            </div>
+    
 
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered table-hover">
 
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Altura</th>
-                            <th>Peso</th>
-                            <th style="width: 5%;"></th>
-                        </tr>
-                    </thead>
-                    
-                    <tbody class="text-secondary info-txt ">
+    <!-- ==========================*Sección principal*=============================== -->
+    <div class="flex-grow-1 d-flex">
 
-                        <tr class="p-1" th:if="${userRecords.isEmpty()}">
-                            <td colspan="4">
-                                <span>No hay registros aun</span>
-                            </td>
-                        </tr>
 
-                        <tr th:if="${!userRecords.isEmpty()}" th:each="userRecord, iterStat : ${userRecords}">
-                            <form th:id="'updateUserRecordForm_'+${iterStat.index}" th:action="@{/app/user_record/update}" th:method="PUT">
-                                <td>
-                                    <input type="hidden" name="id" th:value="${userRecord.id}">
-                                    <input type="date" name="date" class="border-0" th:value="${userRecord.date}">
+
+
+
+        <!-- ==========================*Aside común a la app, aparece a la izquierda*=============================== -->
+        <aside th:replace="~{layout/fragments :: aside}"></aside>
+
+
+
+
+
+        <!--============ Contenido central, el contenido de cada sección está aqui =============-->
+        <main class="col-md-9 col-12 p-3">
+
+
+            <!-- Muestra mensajes de exito o de error para informar cuando es debido -->
+            <div class="alert alert-success show-message" th:if="${success}" th:text="${success}"></div>
+            <div class="alert alert-danger show-message" th:if="${error}" th:text="${error}"></div>
+
+
+                <div class="mb-5">
+                    <h4>Estadísticas y control de <span sec:authentication="name"></span></h4>
+                </div>
+                
+                
+                <!-- Muestra la paginación cuando hay registros -->
+                <div th:if="${!userRecords.isEmpty()}">
+                    <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
+                </div>
+
+
+
+
+                <!-- Estas secciones son para mostrar errores, aunque parecen formularios, es así para que
+                     Thymeleaf reconozca a que objeto pertenece el error -->
+                <!-- Errores de actualización de un registro -->
+                <form action="#" th:if="${userRecordUpdate}" th:object="${userRecordUpdate}">
+                    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger show-message">
+                        <ul class="m-0">
+                            <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                        </ul>
+                    </div>
+                </form>
+                <!-- Errores de creación de un registro -->
+                <form action="#" th:object="${userRecordCreate}">
+                    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger show-message">
+                        <ul class="m-0">
+                            <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                        </ul>
+                    </div>
+                </form>
+
+
+
+
+
+                <!-- Tabla de registros -->
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered border-primary table-hover table-light">
+
+                        <!-- Encabezado de la tabla -->
+                        <thead class="table-primary border-primary">
+                            <tr>
+                                <th style="width: 12%;">Fecha</th>
+                                <th style="width: 12%; min-width: 75px;">Altura</th>
+                                <th style="width: 12%; min-width: 75px;">Peso</th>
+                                <th style="min-width: 300px;">Comentario</th>
+                                <th style="width: 5%;"></th>
+                            </tr>
+                        </thead>
+                        
+                        <!-- Cuerpo de la tabla -->
+                        <tbody class="text-secondary info-txt ">
+
+                            <!-- Si no hay registros  -->
+                            <tr class="p-1" th:if="${userRecords.isEmpty()}">
+                                <td colspan="5">
+                                    <span>No hay registros aun</span>
                                 </td>
-                                <td>
-                                    <input type="number" name="height" class="border-0 w-set-input" th:value="${userRecord.height}">
-                                    <span class="ms-1">cm</span>
-                                </td>
-                                <td>
-                                    <input type="number" name="weight" class="border-0 w-set-input" th:value="${userRecord.weight}">
-                                    <span class="ms-1">kg</span>
-                                </td>
-                            </form>
+                            </tr>
 
-                            <td>
-                                <div class="d-flex">
-                                    <form th:action="@{/app/user_record/delete/} + ${userRecord.id}" th:method="DELETE">
-                                        <button class="me-1 table-mini-btn" onclick="return confirm('¿Estás seguro que deseas eliminar este registro?')"
-                                            type="submit">
-                                            <i class="fa-solid fa-trash"></i>
+                            <!-- Si hay registros los mostrará de forma paginada en la tabl, cada registro es a su vez
+                                 un formulario de actualización -->
+                            <tr th:if="${!userRecords.isEmpty()}" th:each="userRecord, iterStat : ${userRecords}">
+                                <form th:id="'updateUserRecordForm_'+${iterStat.index}" th:action="@{/app/user_record/update}" th:method="PUT">
+                                    <td>
+                                        <input type="hidden" name="id" th:value="${userRecord.id}">
+                                        <input type="date" name="date" class="border-0" th:value="${userRecord.date}" required>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="height" min="100" max="250" class="border-0 w-set-input" th:value="${userRecord.height}">
+                                        <span class="ms-1">cm</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="weight" min="20" max="500" step="0.1" class="border-0 w-set-input" th:value="${userRecord.weight}">
+                                        <span class="ms-1">kg</span>
+                                    </td>
+                                    <td>
+                                        <textarea type="text" style="width: 100%;" rows="1" name="userRecordComment"
+                                                maxlength="255" class="border-0 " th:text="${userRecord.userRecordComment}"></textarea>
+                                    </td>
+                                </form>
+                                <!-- Celda de acciones, actualizar y borrar -->
+                                <td>
+                                    <div class="d-flex">
+
+                                        <button th:form="'updateUserRecordForm_'+${iterStat.index}" class="me-1 table-mini-btn" type="submit">
+                                                <i class="fa-solid fa-floppy-disk"></i>
                                         </button>
-                                    </form>
-                                    <button th:form="'updateUserRecordForm_'+${iterStat.index}" class="me-1 table-mini-btn" type="submit">
-                                            <i class="fa-solid fa-floppy-disk"></i>
-                                    </button>
-                                </div>
-                            </td>
-                            
-                        </tr>
-                    </tbody>
-                    
-                    <tbody class="mt-1 info-txt table-secondary">
-                        <tr><td></td><td colspan="3"><div class="ms-1">Última vez</div></td></tr>
-                        <tr>
-                            <form id="createUserRecordForm" th:object="${userRecord}" th:action="@{/app/user_record/create}" method="POST">
-                                <td>
-                                    <input type="date" class="border-0" th:field="*{date}">
+
+                                        <form th:action="@{/app/user_record/delete}" th:method="DELETE">
+                                            <input type="hidden" name="id" th:value="${userRecord.id}">
+                                            <button class="me-1 table-mini-btn" onclick="return confirm('¿Estás seguro que deseas eliminar este registro?')"
+                                                type="submit">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
-                                <td>
-                                    <input type="number" class="border-0 w-set-input" th:field="*{height}">
-                                    <span class="ms-1">cm</span>
-                                </td>
-                                <td colspan="2">
-                                    <input type="number" class="border-0 w-set-input" step="0.1" th:field="*{weight}">
-                                    <span class="ms-1" >kg</span>
-                                </td>
-                            </form>
-                        </tr>
-                    </tbody>
-                </table>
-                <button form="createUserRecordForm" class="me-1 btn btn-sm btn-success" type="submit">
-                    Añadir nuevo registro<i class="ms-2 fa-solid fa-plus"></i>
-                </button>
-            </div>
+                                
+                            </tr>
+                        </tbody>
+                        
+                        <!-- Esta sección es una extensión de la tabla para añadir nuevos registros -->
+                        <tbody class="mt-1 info-txt table-primary border-primary">
+                            <tr><td></td><td colspan="4"><div class="ms-1 text-primary">Última vez</div></td></tr>
+                            <tr>
+                                <!-- Formulario de creación de registros, muestra el último registro por defecto o vacio -->
+                                <form id="createUserRecordForm" th:object="${userRecordCreate}" th:action="@{/app/user_record/create}" method="POST">
+                                    <td>
+                                        <input type="date" th:field="*{date}" required>
+                                    </td>
+                                    <td>
+                                        <input type="number" max="250" min="100" class=" w-set-input" th:field="*{height}" required>
+                                        <span class="ms-1">cm</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" max="500" min="20" class=" w-set-input" step="0.1" th:field="*{weight}" required>
+                                        <span class="ms-1" >kg</span>
+                                    </td>
+                                    <td colspan="2">
+                                        <textarea type="text" rows="1" style="width: 100%;" maxlength="255" th:field="*{userRecordComment}"></textarea>
+                                    </td>
+                                </form>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Botón del formulario, apunta al formulario de creación -->
+                    <button form="createUserRecordForm" class="me-1 btn btn-sm btn-success" type="submit">
+                        Añadir nuevo registro<i class="ms-2 fa-solid fa-plus"></i>
+                    </button>
+                </div>
 
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
-<!-- Pie de página -->
-<footer th:replace="~{layout/fragments :: footer}">
+    
 
-</footer>
+    <!-- ====================================*Footer y scripts*========================================= -->
+    <footer th:replace="~{layout/fragments :: footer}"></footer>
 
 </body>
 

@@ -10,20 +10,17 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/*
+ * Esta clase configura las acciones que se llevan a cabo cuando un usuario se auntentica
+ */
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+
+    //Cuando se auntentique se procederá a dirigir a la ruta de temporadas
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        // // Obtener el usuario autenticado
-        // Object principal = authentication.getPrincipal();
-        // String uuid = "";
 
-        // if (principal instanceof CustomUserDetails) {
-        //     uuid = ((CustomUserDetails) principal).getUuid();
-        // }
-
-        // Redirigir a la URL deseada
         response.sendRedirect(request.getContextPath() + "/app/season/list");
     }
 

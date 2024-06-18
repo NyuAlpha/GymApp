@@ -1,57 +1,78 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
     <head th:replace="~{layout/fragments :: head}">
     </head>
     
     <body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
         
 
-        <header th:replace="~{layout/fragments :: header}">
-        </header>
+        <!-- ====================================*Encabezado*========================================= -->
+        <header th:replace="~{layout/fragments :: header}"></header>
     
 
+
+
+        <!-- ==========================*Sección principal*=============================== -->
         <div class="flex-grow-1 d-flex">
             
-            <aside th:replace="~{layout/fragments :: aside}">
-            </aside>
 
 
-            <!-- Contenido principal -->
+
+
+
+            <!-- ==========================*Aside común a la app, aparece a la izquierda*=============================== -->
+            <aside th:replace="~{layout/fragments :: aside}"></aside>
+
+
+
+
+
+
+            <!--============ Contenido central, el contenido de cada sección está aqui =============-->
             <main class="col-md-9 col-12 p-3">
 
-                    <h2>Editor de entrenamiento</h2>
+
+                <!-- **************************************
+                 FORMULARIO DE EDICIÓN DE ENTRENAMIENTO              
+                **************************************** -->
+                <div class="card border-secondary card-form">
+
+                    <h4 class="card-header">Editor de entrenamiento</h4>
                     
-                    <form class="my-3" id="updateTrainingForm" th:action="@{/app/season/training/update}" th:object="${training}" th:method="PUT">
-
-                        <div th:replace="~{layout/forms :: trainingForm}">
-                        </div>
-                        
-                    </form>
-
-                    <div class="d-flex my-4">
-                        <button type="submit" form="updateTrainingForm" class="btn btn-sm btn-primary me-2">
-                            Guardar<i class=" ms-2 fa-solid fa-floppy-disk"></i>
-                        </button>
-                        <form th:action="@{/app/season/training/delete}"  th:method="DELETE">
-                            <input type="hidden" name="trainingId" id="trainingId" th:value="${training.id}">
-                            <input type="hidden" name="seasonId" id="seasonId" th:value="${training.seasonId}">
-                            <button type="submit" class="btn btn-sm btn-danger me-2 " 
-                                        onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')">Eliminar
-                                <i class="ms-2 fa-solid fa-trash"></i>
-                            </button>
+                    <div class="card-body">
+                        <form id="updateTrainingForm" th:action="@{/app/season/training/update}" th:object="${training}" th:method="PUT">
+                            <!-- inyecta los campos del formulario-->
+                            <div th:replace="~{layout/forms :: trainingForm}"></div>                       
                         </form>
-                        <a class="btn btn-sm btn-secondary me-2" th:href="@{/app/season/training/} + ${training.id} + '/show'">
-                            Volver<i class=" ms-2 fa-solid fa-rotate-left"></i>
-                        </a>
                     </div>
+                </div>
+                <!-- Apartado de acciónes, guardar, eliminar y volver -->
+                <div class="d-flex my-4">
+                    
+                    <!-- Referencia al formulario -->
+                    <button type="submit" form="updateTrainingForm" class="btn btn-sm btn-primary me-2">
+                        Guardar<i class=" ms-2 fa-solid fa-floppy-disk"></i>
+                    </button>
+
+                    <div th:replace="~{layout/forms :: trainingDelete}"></div>
+
+                    <a class="btn btn-sm btn-secondary me-2" th:href="@{/app/season/training/} + ${training.id} + '/show'">
+                        Volver<i class=" ms-2 fa-solid fa-rotate-left"></i>
+                    </a>
+                </div>
+
 
             </main>
         </div>
 
         
 
-        <footer th:replace="~{layout/fragments :: footer}">
 
-        </footer>
+        <!-- ====================================*Footer y scripts*========================================= -->
+        <footer th:replace="~{layout/fragments :: footer}"></footer>
+
+
+        
     </body>
 </html>

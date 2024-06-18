@@ -6,7 +6,13 @@ import org.springframework.data.domain.Pageable;
 import com.victor.project.gymapp.dto.UserRecordDto;
 import com.victor.project.gymapp.models.UserRecord;
 
-public interface IUserRecordService extends CrudService {
+
+
+
+/*
+ * Interfaz de service para manipulación de registros de usuario
+ */
+public interface IUserRecordService {
 
     Page<UserRecord> findAllUserRecord(Pageable pageable);
 

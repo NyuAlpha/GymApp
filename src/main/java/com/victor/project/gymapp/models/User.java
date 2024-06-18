@@ -1,11 +1,13 @@
 package com.victor.project.gymapp.models;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,22 +35,14 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @Table(name = "users", uniqueConstraints = {
     @UniqueConstraint(columnNames = "username"),
     @UniqueConstraint(columnNames = "email")})
 public class User {
 
     
-    public User() {
-        roles = new HashSet<>();
-    }
 
-    public User(String username,String email,String password) {
-        this();
-        this.username = username;
-        this.email= email;
-        this.password = password;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -69,6 +63,7 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
+    
     @ManyToMany
     @JoinTable(
         name = "user_roles",//Nueva tabla intermedia
@@ -80,15 +75,53 @@ public class User {
     private Set<Role> roles = new HashSet<>();//Cada usuario puede tener muchos roles, y los roles pueden compartirse en más de un usuario
 
 
-    @OneToMany(mappedBy ="user" ,cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserRecord> userRecords;
 
+    @OneToMany(mappedBy ="user" , fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    //Los registros de estadisticas de usuario que tenga, no se deben cargar en esta entidad
+    private Set<UserRecord> userRecords; 
+
+
+
+
+
+
+
+
+    /*
+     * Constructor con datos básicos
+     */
+    public User(String username,String email,String password) {
+        this();
+        this.username = username;
+        this.email= email;
+        this.password = password;
+    }
+
+
+
+
+
+
+
+
+    /*
+     * Antes de guardar en la base de datos el enables pasa a ser true, como usuario activo
+     */
     @PrePersist
     private void prePersist(){
         enabled = true;
     }
 
 
+
+
+
+
+
+
+    /*
+     * Añade un rol al usuario
+     */
     public void addRole(Role role){
         if(!roles.contains(role)){
             roles.add(role);

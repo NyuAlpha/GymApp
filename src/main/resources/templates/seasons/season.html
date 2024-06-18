@@ -7,49 +7,69 @@
 <body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
 
 
-    <header th:replace="~{layout/fragments :: header}">
-    </header>
+    <!-- ====================================*Encabezado*========================================= -->
+    <header th:replace="~{layout/fragments :: header}"></header>
+    
 
 
+
+    <!-- ==========================*Sección principal*=============================== -->
     <div class="flex-grow-1 d-flex">
-
-        <aside th:replace="~{layout/fragments :: aside}">
-        </aside>
+            
 
 
-        <!-- Contenido principal -->
+
+
+
+        <!-- ==========================*Aside común a la app, aparece a la izquierda*=============================== -->
+        <aside th:replace="~{layout/fragments :: aside}"></aside>
+
+
+        
+        
+
+        <!--============ Contenido central, el contenido de cada sección está aqui =============-->
         <main class="col-md-9 col-12 p-3">
-            <div class="alert alert-success show-message p-2" th:if="${success}" th:text="${success}"></div>
-            <div class="card my-2 ">
-                <div class="card-header">
-                    <h4 th:text="'Temporada: ' + ${season.title}"></h4>
-                </div>
-                <div class="card-body">
-                    <table class="my-3 table">
-                        <thead>
-                            <tr>
-                                <th>Inicio</th>
-                                <th>Fin</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td th:text="${season.startDate}"></td>
-                                <td th:if="${season.endDate}" th:text="${season.endDate}"></td>
-                                <td th:if="${season.endDate} == null" th:text="'Sin Finalizar'"></td>
-                            </tr>
-                            <tr th:if="${season.seasonComment}">
-                                <td colspan="2" th:text="${season.seasonComment}"></td>
-                            </tr>
-                        </tbody>
-                    </table>
 
-                    <div class="d-flex">
-                        <a class="btn btn-primary btn-small me-3" th:href="@{/app/season/} + ${season.id} + '/update'">Editar
+
+            <!-- Mensajes de exito informativos van aquí -->
+            <div class="alert alert-success show-message" th:if="${success}" th:text="${success}"></div>
+
+            
+            <!-- *********************************
+                     SECCIÓN DE TEMPORADA              
+            ************************************ -->
+            <!-- Muestra los datos de la temporada -->
+            <div class="card my-2 card-info border-primary">
+
+                <h4 class="card-header" th:text="'Temporada de ' + ${season.title}"></h4>
+
+                <div class="card-body">
+
+                    <!-- Fechas de la temporada, inicio y fin (fin si existe) -->
+                    <div>
+                        <span>Iniciado: </span><h5 class="d-inline ms-2" th:text="${season.startDate}"></h5>
+                    </div>
+                    <div class="my-2">
+                        <span>Finalizado: </span>
+                        <h5 class="d-inline ms-2" th:if="${season.endDate}" th:text="${season.endDate}"></h5>
+                        <h5 class="d-inline ms-2" th:if="${season.endDate} == null" th:text="'Sin finalizar'"></h5>
+                    </div>
+
+                    <!-- Si hay comentario se muestra -->
+                    <div th:if="${season.seasonComment}">
+                        <span th:text="${season.seasonComment}"></span>
+                    </div>
+
+                    <!-- Panel de acciones, editar, eliminar y volver de la temporada -->
+                    <div class="d-flex mt-3">
+                        <a class="btn btn-primary btn-sm me-2" th:href="@{/app/season/} + ${season.id} + '/update'">
+                            Editar
                             <i class="ms-2 fa-solid fa-pen-to-square"></i>
                         </a>
                         <div th:replace="~{layout/forms :: seasonDelete}"></div>
-                        <a class="btn btn-secondary" th:href="@{/app/season/list}">Temporadas<i
+
+                        <a class="btn btn-sm btn-secondary me-2" th:href="@{/app/season/list}">Volver<i
                             class=" ms-2 fa-solid fa-rotate-left"></i></a>
                     </div>
                 </div>
@@ -57,89 +77,123 @@
             </div>
 
 
-            <div class="my-4">
-                <h2>Entrenamientos</h2>
-                <div class="alert alert-success show-message p-2" th:if="${successTraining}" th:text="${successTraining}"></div>
-                <div class="p-1" th:if="${trainings.isEmpty()}">
-                    <span>No hay entrenamientos aun:</span>
-                </div>
 
 
-                <div class="table-responsive">
-                    <table class=" table table-sm table-bordered table-hover table-light">
-                        <thead class="table-primary">
-                            <tr >
-                                <th style="width: 20%;">Fecha</th>
-                                <th style="width: 15%;">Título</th>
-                                <th style="width: 60%;">comentario</th>
-                                <th style="width: 5%;"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-secondary info-txt">
-                            <tr th:if="${trainings.isEmpty()}"><td colspan="4">No hay entrenamientos creados aun</td></tr>
-                            <tr th:if="${!trainings.isEmpty()}" th:each="training : ${trainings}">
 
-                               
-                                    <td>
-                                        <a th:href="@{/app/season/training/} + ${training.id} + '/show'" th:text="${training.date}" class="text-decoration-none text-secondary"></a>
-                                    </td>
-                                    <td>
-                                        <a th:href="@{/app/season/training/} + ${training.id} + '/show'" th:text="${training.title}" class="text-decoration-none text-secondary"></a>
-                                    </td>
-                                    <td>
-                                        <a th:href="@{/app/season/training/} + ${training.id} + '/show'" th:text="${training.trainingComment}" class="text-decoration-none text-secondary"></a>
-                                    </td>
-                                    <td class="d-flex">
+            <!--============ Separador vacio para dividir secciones =============-->
+            <div class="vertical-separator"></div>
+            <hr>
+
+
+
+
+
+            <!-- *****************************
+                 APARTADO DE ENTRENAMIENTOS              
+            ******************************** -->
+            <h4>Entrenamientos</h4>
+
+            <!-- Tabla de entrenamientos para acceder a ellos y verlos -->
+            <div class="table-responsive">
+                <table class=" table table-sm table-bordered border-primary table-hover table-light">
+
+                    <!-- Encabezado de la tabla -->
+                    <thead class="table-primary border-primary">
+                        <tr>
+                            <th style="width: 20%;">Fecha</th>
+                            <th style="width: 15%;">Título</th>
+                            <th style="width: 60%;">comentario</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+
+                    <!-- Cuerpo de la tabla donde se muestran entrenamiento, cada fila tiene un enlace al entrenamiento -->
+                    <tbody class="text-secondary info-txt">
+
+                        <!-- Si no hay entrenamientos se muestra el texto en una fila completa -->
+                        <tr th:if="${trainings.isEmpty()}"><td colspan="4">No hay entrenamientos creados aun</td></tr>
+
+                        <!-- Si hay registros se muestran de forma paginada -->
+                        <tr th:if="${!trainings.isEmpty()}" th:each="training : ${trainings}">
+
+                                <td>
+                                    <a th:href="@{/app/season/training/} + ${training.id} + '/show'" th:text="${training.date}" class="text-decoration-none text-secondary"></a>
+                                </td>
+                                <td>
+                                    <a th:href="@{/app/season/training/} + ${training.id} + '/show'" th:text="${training.title}" class="text-decoration-none text-secondary"></a>
+                                </td>
+                                <td>
+                                    <a th:href="@{/app/season/training/} + ${training.id} + '/show'" th:text="${training.trainingComment}" class="text-decoration-none text-secondary"></a>
+                                </td>
+                                <!-- Columna de acciones enlace al entrenamiento, y eliminar entrenamiento-->
+                                <td >
+                                    <div class="d-flex">
                                         <a th:href="@{/app/season/training/} + ${training.id} + '/show'" class="me-1 table-mini-btn text-decoration-none">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </a>
-                                        <form th:action="@{/app/season/delete}" th:method="DELETE">
-                                            <input type="hidden" name="seasonId" id="seasonId" th:value="${season.id}">
+                                        <form th:action="@{/app/season/training/delete}" th:method="DELETE">
+                                            <input type="hidden" name="trainingId" id="trainingId" th:value="${training.id}">
+                                            <input type="hidden" name="seasonId" id="seasonId" th:value="${training.seasonId}">
                                             <button class="me-1 table-mini-btn"
                                                 onclick="return confirm('¿Estás seguro que deseas eliminar esta temporada?')" type="submit">
                                                 <i class="fa-solid fa-trash"></i>
                                             </button>
                                         </form>
-                                    </td>
-                                
-
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div th:if="${!trainings.isEmpty()}">
-                        <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
-                    </div>
+                                    </div>
+                                </td>
+                            
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Se muestra la paginación si hay entrenamientos -->
+                <div th:if="${!trainings.isEmpty()}">
+                    <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
                 </div>
-
-
-                
-
-                <div class="my-5">
-                    <hr>
-                    <form  th:action="@{/app/season/training/create}" th:object="${training}" method="post">
-
-                        <div th:replace="~{layout/forms :: trainingForm}">
-                        </div>
-                        
-                        <div class="d-flex my-4">
-                            <button type="submit" class="btn btn-sm btn-success me-2">
-                                Añadir entrenamiento<i class=" ms-2 fa-solid fa-plus"></i>
-                            </button>
-                        </div>
-                        
-                    </form>
-                </div>
-
 
             </div>
+
+
+
+
+
+
+            <!--============ Separador vacio para dividir secciones =============-->
+            <div class="vertical-separator"></div>
+            <hr>
+
+
+
+
+
+            <!-- Formulario para crear un entrenamiento -->
+            <div class="card border-secondary card-form">
+
+                <h4 class="card-header">Crear entrenamiento</h4>
+                
+                <div class="card-body">
+                    <form id="createTrainingForm" th:action="@{/app/season/training/create}" th:object="${training}" method="post">
+                        <!-- inyecta los campos del formulario-->
+                        <div th:replace="~{layout/forms :: trainingForm}"></div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="d-flex my-3">
+                <button form="createTrainingForm" type="submit" class="btn btn-sm btn-success me-2">
+                    Añadir entrenamiento<i class=" ms-2 fa-solid fa-plus"></i>
+                </button>
+            </div>
+
         </main>
     </div>
 
 
 
-    <footer th:replace="~{layout/fragments :: footer}">
 
-    </footer>
+    <!-- ====================================*Footer y scripts*========================================= -->
+    <footer th:replace="~{layout/fragments :: footer}"></footer>
+
+
 </body>
 
 </html>

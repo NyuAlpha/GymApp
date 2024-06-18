@@ -11,6 +11,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+/*
+ * Esta clase representa el nombre de un ejercicio, será una tabla independiente en la BBDD
+ * Esto es debido a que se debe reutilizar el nombre de los ejercicios.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,10 +24,18 @@ import lombok.Setter;
 @Table(name="exercise_names")
 public class ExerciseName {
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer id;//Primary key
 
     @Column(length = 30, unique = true, nullable = false)
-    private String name;
+    private String name;//nombre del ejercicio, estrictamente necesario
+
+
+    //constructor simple para crear un nombre de ejercicio
+    public ExerciseName(String name) {
+        this.name= name;
+    }
 }

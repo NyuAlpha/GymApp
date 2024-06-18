@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.expression.Arrays;
 
 import com.victor.project.gymapp.dto.GymSetDto;
 import com.victor.project.gymapp.models.Exercise;
@@ -15,6 +14,10 @@ import com.victor.project.gymapp.repositories.GymSetRepository;
 
 import lombok.AllArgsConstructor;
 
+
+/*
+ * Servicio para procesar datos de Series de ejercicios
+ */
 @Service
 @AllArgsConstructor
 public class GymSetService implements IGymSetService {
@@ -22,54 +25,73 @@ public class GymSetService implements IGymSetService {
     private GymSetRepository gymSetRepository;
     private ExerciseRepository exerciseRepository;
 
+
+
+
+    /*
+     * Crea en base al dto un ejercicio y lo guarda
+     */
     @Override
     @Transactional
     public void saveGymSet(GymSetDto gymSetDto) {
 
-        GymSet gymSet = new GymSet();
 
+        //Crea una serie en base al dto con los campos simples
+        GymSet gymSet = new GymSet(gymSetDto);
+
+        //Asigna su primary key
         //Se calcula la posición de la serie y se le asigna su entrenamiento, ya que ambos son la primary key
         Byte count = gymSetRepository.countByExerciseId(gymSetDto.getExerciseId());
         Exercise exercise = exerciseRepository.findById(gymSetDto.getExerciseId()).orElseThrow(NoSuchElementException::new);
         gymSet.setId(exercise,count);//Si tiene 4, la posición del último es la 3, por eso se pone el mismo que count
 
-        //Resto de campos
-            
-        gymSet.setWeight(gymSetDto.getWeight());
-        Byte reps = (gymSetDto.getRepetitions()==null)? null:gymSetDto.getRepetitions().byteValue();
-        gymSet.setRepetitions(reps);
-        Byte times = (gymSetDto.getRepetitions()==null)? 1:gymSetDto.getTimesRepeated().byteValue();
-        gymSet.setTimesRepeated(times);
-        gymSet.setFailure(gymSetDto.getFailure());
-
-       
+        //Se guarda
         gymSetRepository.save(gymSet);
 
     }
 
+
+
+
+
+    /*
+     * Borra la serie que pertenece al ejercicio y tiene la posición de los argumentos enviados
+     */
     @Override
     @Transactional
     public void deleteGymSet(Integer exerciseId, Byte setOrder) {
         gymSetRepository.deleteByExerciseIdAndSetOrder(exerciseId,setOrder);
     }
 
+
+
+
+
+    /*
+     * Actualiza una serie en base a los datos del dto
+     */
     @Override
     @Transactional
     public void updateGymSet(GymSetDto gymSetDto) {
+
         GymSet gymSet = gymSetRepository.findByExerciseIdAndSetOrder(gymSetDto.getExerciseId(),gymSetDto.getSetOrder())
                             .orElseThrow(NoSuchElementException::new);
-            
-        gymSet.setWeight(gymSetDto.getWeight());
-        Byte reps = (gymSetDto.getRepetitions()==null)? null:gymSetDto.getRepetitions().byteValue();
-        gymSet.setRepetitions(reps);
-        Byte times = (gymSetDto.getRepetitions()==null)? null:gymSetDto.getTimesRepeated().byteValue();
-        gymSet.setTimesRepeated(times);
-        gymSet.setFailure(gymSetDto.getFailure());
-
+        
+        //Se actualizan sus campos simples en base al dto
+        gymSet.update(gymSetDto);
        
         gymSetRepository.save(gymSet);
     }
 
+
+
+
+
+
+    
+    /*
+    * Asciende una posición (orden) la serie pasada como parámetro en base a su ejercicio y orden
+    */
     @Override
     @Transactional
     public void down(Integer exerciseId, Byte setOrder) {
@@ -93,6 +115,13 @@ public class GymSetService implements IGymSetService {
         }
     }
 
+
+
+
+
+    /*
+    * Desciende una posición (orden) la serie pasada como parámetro en base a su ejercicio y orden
+    */
     @Override
     @Transactional
     public void up(Integer exerciseId, Byte setOrder) {
@@ -117,5 +146,15 @@ public class GymSetService implements IGymSetService {
     }
 
 
-    
+    /*
+     * Retorna la última serie si existe, retorna una vacia si no existe
+     */
+    public GymSet getLastGymSet(Integer exerciseId){
+
+        Optional<GymSet> optionalGymSet = gymSetRepository.findLastByExerciseId(exerciseId);
+        if(optionalGymSet.isPresent()){
+            return optionalGymSet.get();
+        }
+        return new GymSet();
+    }
 }

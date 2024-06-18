@@ -1,372 +1,269 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head th:replace="~{layout/fragments :: head}">
-    </head>
-    
-    <body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
+
+<head th:replace="~{layout/fragments :: head}">
+</head>
+
+<body class="container-fluid d-flex flex-column vh-100 p-0 m-0">
         
 
-        <header th:replace="~{layout/fragments :: header}">
-        </header>
-    
+    <!-- ====================================*Encabezado*========================================= -->
+    <header th:replace="~{layout/fragments :: header}">
+    </header>
 
-        <div class="flex-grow-1 d-flex">
+
+
+
+    <!-- ==========================*Sección principal*=============================== -->
+    <div class="flex-grow-1 d-flex">
+        
+
+
+
+
+        <!-- ==========================*Aside común a la app, aparece a la izquierda*=============================== -->
+        <aside th:replace="~{layout/fragments :: aside}">
+        </aside>
+
+
+
+
+
+        <!--============ Contenido central, el contenido de cada sección está aqui =============-->
+        <main class="col-md-9 col-12 p-3">
+
+
+            <!-- Mensajes de exito de ejercicio informativos van aquí -->
+            <div class="alert  alert-success show-message" th:if="${successExercise}" th:text="${successExercise}"></div>
             
-            <aside th:replace="~{layout/fragments :: aside}">
-            </aside>
 
+            <!-- *****************************
+                 APARTADO DE EJERCICIO               
+            ******************************** -->
+            <!-- Muestra la información de este ejercicio -->
+            <div class="card my-2 card-info">
 
-            <!-- Contenido principal -->
-            <main class="col-md-9 col-12 p-3">
+                <!-- Nombre y variante del ejercicio -->
+                <h4 class="card-header">
+                    <span th:if="${exercise.exerciseName}" th:text="'Ejercicio: ' + ${exercise.exerciseName}"></span>
+                    <span th:if="${exercise.variant}" th:text="${exercise.variant}"></span>
+                </h4>
 
-
-                    <div class="alert  alert-success show-message p-2" th:if="${successExercise}" th:text="${successExercise}"></div>
-                    <div class="card my-2 ">
-                        <h4 class="card-header">
-                            <span th:if="${exerciseDB.exerciseName}" th:text="${exerciseDB.exerciseName}"></span>
-                            <span th:if="${exerciseDB.variant}" th:text="${exerciseDB.variant}"></span>
-                        </h4>
-                        <div th:if="${exerciseDB.exerciseComment}" class="card-body">
-                            
-                            <span  th:text="${exerciseDB.exerciseComment}">
-                                
-                            </span>
-
-                        </div>
-
+                <div class="card-body">
+                    
+                    <!-- Posible descripción del ejercicio -->
+                    <div class="my-2">
+                        <span th:if="${exercise.exerciseComment}" th:text="${exercise.exerciseComment}"></span>
                     </div>
 
+                    <!-- Panel de acciones editar, volver y eliminar ejercicio-->
+                    <div class="d-flex mt-4">
+                    
+                        <a class="btn btn-primary btn-sm me-2" th:href="@{/app/season/training/exercise/} + ${exercise.id} + '/update'">
+                            Editar<i class="ms-2 fa-solid fa-pen-to-square"></i>
+                        </a>
+
+                        <div th:replace="~{layout/forms :: exerciseDelete}"></div>
+
+                        <a class=" me-2 btn btn-sm btn-secondary" th:href="@{/app/season/training/} + ${exercise.trainingId} + '/show'"  >
+                            Volver<i class=" ms-2 fa-solid fa-rotate-left"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
 
 
 
-                    <div class="my-4">
-                        <form id="updateExerciseForm" th:action="@{/app/season/training/exercise/update}" th:object="${exerciseForm}" th:method="PUT">
 
-                            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger show-message p-2">
-                                <ul class="m-0">
-                                    <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
-                                </ul>
-                            </div>
-    
-                            <input type="hidden" th:field="*{trainingId}">
-                            <input type="hidden" th:field="*{id}">
+
+
+            <!--============ Separador vacio para dividir secciones =============-->
+            <div class="vertical-separator"></div>
+            <hr>
+
+
+
+
+
+
+
+            <!-- *****************************
+                 APARTADO DE SERIES               
+            ******************************** -->
+
+            <h4 class="mb-4" th:text="'Series de ' + ${exercise.exerciseName}"></h4>
+        
+
+            <!-- Resumen de todas las series de un ejercicio -->
+            <div class="alert alert-info p-1 info-txt"  >
+                <strong>Resumen:</strong> <span th:text="${exercise.printGymSetFormat()}"></span>
+            </div>
+
+
+            <!-- Sección de mensajes de error, realmenter no son formularios, si no una forma en la
+                 que Thymeleaf identificará a que objeto pertenece el error para mostrarlo -->
+
+            <!-- Errores en la actualización de una serie -->
+            <form th:if="${gymSetUpdate}" action="#" th:object="${gymSetUpdate}">
+                    
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger show-message">
+                    <ul class="m-0">
+                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                    </ul>
+                </div>
+            </form>
+            <!-- Errores en la creación de una serie -->
+            <form th:if="${gymSetForm}" action="#" th:object="${gymSetForm}">
+                
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger show-message">
+                    <ul class="m-0">
+                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                    </ul>
+                </div>
+            </form>
+
+
+
+
+            <!-- Mensajes de exito de serie informativos van aquí -->
+            <div class="alert alert-success show-message" th:if="${successGymSet}" th:text="${successGymSet}"></div>
+
+
+            <!-- Tabla de series -->
+            <div class="table-responsive">
+                <table class=" table table-sm table-bordered table-hover table-light border-primary">
+                    
+                    <!-- Encabezado de la tabla -->
+                    <thead class="table-primary border-primary">
+                        <tr>
+                            <th style="width: 25%;">Peso</th>
+                            <th style="width: 25%;">Reps</th>
+                            <th style="width: 25%;">Series</th>
+                            <th style="width: 10%;">Fallo</th>
+                            <th style="width: 15%;">Acción</th>
+                        </tr>
+                    </thead>
+        
+                    <!-- Sección de tabla para mostrar las series y editarlas -->
+                    <tbody class="text-secondary info-txt">
+        
+                        <!-- Si hay series se van a mostrar en cada fila de la tabla -->
+                        <tr th:if="${exercise.gymSetsDtos !=null}" th:each="gymSet,iterStat : ${exercise.gymSetsDtos}">
                             
-                            <table class="table table-sm table-bordered table-hover table-primary">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 20%;">Ejercicio</th>
-                                        <th style="width: 15%;">Variante</th>
-                                        <th >comentario</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="info-txt">
-                                    
-                                    <tr>
-                                        <td class="p-1">
-                                            <input class="form-control-sm border-1 w-100 " type="text" th:field="*{exerciseName}"
-                                                    th:classappend="${#fields.hasErrors('exerciseName')} ? 'is-invalid' : ''">
-                                        </td>
-                                        <td class="p-1">
-                                            <input class="form-control-sm border-1 w-100" type="text" th:field="*{variant}"
-                                                    th:classappend="${#fields.hasErrors('variant')} ? 'is-invalid' : ''">
-                                        </td>
-                                        <td class="p-1">
-                                            <textarea rows="1" class="form-control-sm border-1 w-100" type="text" th:field="*{exerciseComment}"
-                                                    th:classappend="${#fields.hasErrors('exerciseComment')} ? 'is-invalid' : ''">
-                                            </textarea>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
 
 
+                            <!-- Formulario de actualización, cada registro tendrá el suyo con su propio id generado en el forEach de thymeleaf -->
+                            <form th:id="'updateGymSetForm_'+${iterStat.index}" th:action="@{/app/season/training/exercise/gymset/update}" th:method="PUT">
+                                <td>
+                                    <input type="hidden" name="setOrder" th:value = "${gymSet.setOrder}">
+                                    <input type="hidden" name="exerciseId" th:value = "${gymSet.exerciseId}">
+                                    <input type="number" step="0.1" class="border-0 form-control-sm w-set-input" th:value="${gymSet.weight}" name="weight">
+                                    <span>Kg</span>
+                                </td>
+                                <td>
+                                    <input type="number" class="border-0 form-control-sm w-set-input" th:value="${gymSet.repetitions}" name="repetitions">
+                                </td>
+                                <td>
+                                    <span>x</span>
+                                    <input type="number" class="border-0 form-control-sm w-set-input" th:value="${gymSet.timesRepeated}" name="timesRepeated">
+                                </td>
+                                <td class=" text-center">
+                                    <input type="checkbox" name="failure" value="true" th:checked="${gymSet.failure}">
+                                    <input type="hidden" name="_failure" value="on">
+                                </td>
 
-                        </form>
-                        <div class="d-flex">
-                            
-                            <button form="updateExerciseForm"  class="me-2 btn btn-sm btn-primary" type="submit" data-toggle="tooltip" title="Modificar ejercicio">
-                                Guardar <i class="ms-1 fa-solid fa-floppy-disk"></i>
-                            </button>
-                            <form th:action="@{/app/season/training/exercise/delete}" th:method="DELETE">
-                                <input type="hidden" name="exerciseId" th:value="${exerciseDB.id}">
-                                <input type="hidden" name="trainingId" th:value="${exerciseDB.trainingId}">
-                                <button onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" 
-                                        class=" me-2 btn btn-sm btn-danger">
-                                    Eliminar<i class=" ms-2 fa-solid fa-trash"></i>
-                                </button>
                             </form>
-                            <a class=" me-2 btn btn-sm btn-secondary" th:href="@{/app/season/training/} + ${exerciseDB.trainingId} + '/show'"  >
-                                Volver<i class=" ms-2 fa-solid fa-rotate-left"></i>
-                            </a>
-                            
-                        </div>
 
 
 
-                    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <!-- *************************************************************************
-                                                APARTADO DE SERIE 
-                     *****************************************************************************-->
-
-                
-                    
-                    
-
-                    <div class="my-4">
-                        <h4 class="mb-4" th:text="'Series de ' + ${exerciseDB.exerciseName}"></h4>
-                    
-                        <div class="alert alert-info p-1 info-txt"  >
-                            <strong>Resumen:</strong> <span th:text="${exerciseDB.printGymSetFormat()}"></span>
-                        </div>
-    
-                        <div class="my-4" id="gymSetErrors">
-
-                        </div>
-    
-                        <div class="table-responsive">
-                            <table class=" table table-sm table-bordered table-hover ">
-                                <thead class="table-secondary">
-                                    <tr>
-                                        <th style="width: 25%;">Peso</th>
-                                        <th style="width: 25%;">Reps</th>
-                                        <th style="width: 25%;">Series</th>
-                                        <th style="width: 10%;">Fallo</th>
-                                        <th style="width: 15%;">Acción</th>
-                                    </tr>
-                                </thead>
-                    
-                                <tbody class="text-secondary info-txt">
-                    
-                    
-                                    <tr th:if="${exerciseDB.gymSetsDtos !=null}" th:each="gymSet,iterStat : ${exerciseDB.gymSetsDtos}">
-                                        
-                                        <td class="p-1">
-                                            <input type="number" step="0.1" class="border-0 form-control-sm w-set-input" th:value="${gymSet.weight}" th:id="'weight_'+${iterStat.index}">
-                                            <span>Kg</span>
-                                        </td>
-                                        <td class="p-1">
-                                            <input type="number" class="border-0 form-control-sm w-set-input" th:value="${gymSet.repetitions}" th:id="'repetitions_'+${iterStat.index}">
-                                        </td>
-                                        <td class="p-1">
-                                            <span>x</span>
-                                            <input type="number" class="border-0 form-control-sm w-set-input" th:value="${gymSet.timesRepeated}" th:id="'timesRepeated_'+${iterStat.index}">
-                                        </td>
-                                        <td class="p-1 text-center">
-                                            <input type="checkbox" class="border-0"  th:checked="${gymSet.failure}" th:id="'failure_'+${iterStat.index}">
-                                        </td>
-                                        <td class="p-1">
-                                            <div class="d-flex ">
-                                                <form th:action="@{/app/season/training/exercise/gymset/down}" th:method="POST">
-                                                    <input type="hidden" name="setOrder" th:value = "${gymSet.setOrder}">
-                                                    <input type="hidden" name="exerciseId" th:value = "${gymSet.exerciseId}">
-                                                    <button class="me-1 table-mini-btn">
-                                                        <i class="fa-solid fa-caret-up"></i>
-                                                    </button>
-                                                </form>
-                                                <form th:action="@{/app/season/training/exercise/gymset/up}" th:method="POST">
-                                                    <input type="hidden" name="setOrder" th:value = "${gymSet.setOrder}">
-                                                    <input type="hidden" name="exerciseId" th:value = "${gymSet.exerciseId}">
-                                                    <button class="me-1 table-mini-btn">
-                                                        <i class="fa-solid fa-caret-down"></i>
-                                                    </button>
-                                                </form>
-                                                <button type="button" class="me-1 table-mini-btn" th:onclick="'submitRow(' + ${iterStat.index} + ',\'PUT\',\'/app/season/training/exercise/gymset/update\')'">
-                                                    <i class="fa-solid fa-floppy-disk"></i>
-                                                </button>
-                                                <form th:action="@{/app/season/training/exercise/gymset/delete}" th:method="DELETE">
-                                                    <input type="hidden" name="setOrder" th:value = "${gymSet.setOrder}" th:id="'setOrder_'+${iterStat.index}">
-                                                    <input type="hidden" name="exerciseId" th:value = "${gymSet.exerciseId}" th:id="'exerciseId_'+${iterStat.index}">
-                                                    <button onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" type="submit"  
-                                                        class=" me-1 table-mini-btn">
-                                                        <i class=" ms-1 fa-solid fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr th:if="${exerciseDB.gymSetsDtos == null}">
-                                        <td colspan="5">
-                                            <span >No hay ninguna serie aún</span>
-                                        </td>
-                                    </tr>
-                    
-                                </tbody>
-                                <tbody  class="text-secondary table-secondary info-txt">
-                    
-                                    <tr>
-                                        <td class="p-1">
-                                            <input type="hidden" th:value="${gymSetVoid.exerciseId}" id="exerciseId_">
-                                            <input class="form-control-sm border-0 w-set-input"  type="number"  step="0.1" th:value="${gymSetVoid.weight}" id="weight_">
-                                            <span>Kg</span>
-                                            
-                                        </td>
-                                        <td class="p-1">
-                                            <input class="form-control-sm border-0 w-set-input"  type="number" th:value="${gymSetVoid.repetitions}" id="repetitions_">
-                                            
-                                        </td >
-                                        <td class="p-1">
-                                            <span>x</span>
-                                            <input type="number" class="form-control-sm border-0 w-set-input"   th:value="${gymSetVoid.timesRepeated}" id="timesRepeated_">
-                                            
-                                        </td >
-                                        <td class="p-1 text-center">
-                                            <input type="checkbox" th:value="${gymSetVoid.failure}" id="failure_">
-                                        </td>
-                                        <td class="p-1">
-                                            
-                                        </td>
-                                    </tr>
-                                    
-                                </tbody>
-                            </table>
-                    
-
-                            <button  class="btn btn-sm btn-success" type="button" th:onclick="'submitRow(\'\', \'POST\' , \'/app/season/training/exercise/gymset/create\')'">
-                                Añadir <i class="ms-1 fa-solid fa-plus"></i></i>
-                            </button>
-                        </div>
-
-                        
-    
-
-                    </div>
-
-            </main>
-        </div>
-
+                            <!-- Columna de acciones, ascender y descenser serie, editar y borrar  -->
+                            <td class="p-1">
+                                <div class="d-flex ">
+                                    <form th:action="@{/app/season/training/exercise/gymset/down}" th:method="POST">
+                                        <input type="hidden" name="setOrder" th:value = "${gymSet.setOrder}">
+                                        <input type="hidden" name="exerciseId" th:value = "${gymSet.exerciseId}">
+                                        <button class="me-1 table-mini-btn">
+                                            <i class="fa-solid fa-caret-up"></i>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{/app/season/training/exercise/gymset/up}" th:method="POST">
+                                        <input type="hidden" name="setOrder" th:value = "${gymSet.setOrder}">
+                                        <input type="hidden" name="exerciseId" th:value = "${gymSet.exerciseId}">
+                                        <button class="me-1 table-mini-btn">
+                                            <i class="fa-solid fa-caret-down"></i>
+                                        </button>
+                                    </form>
+                                    <!-- Referencia al formulario de actualización de esta fila -->
+                                    <button th:form="'updateGymSetForm_'+${iterStat.index}" type="submit" class="me-1 table-mini-btn">
+                                        <i class="fa-solid fa-floppy-disk"></i>
+                                    </button>
+                                    <form th:action="@{/app/season/training/exercise/gymset/delete}" th:method="DELETE">
+                                        <input type="hidden" name="setOrder" th:value = "${gymSet.setOrder}" th:id="'setOrder_'+${iterStat.index}">
+                                        <input type="hidden" name="exerciseId" th:value = "${gymSet.exerciseId}" th:id="'exerciseId_'+${iterStat.index}">
+                                        <button onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" type="submit"  
+                                            class=" me-1 table-mini-btn">
+                                            <i class=" ms-1 fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Si no hay series muestra esto en una fila completa -->
+                        <tr th:if="${exercise.gymSetsDtos == null}">
+                            <td colspan="5">
+                                <span >No hay ninguna serie aún</span>
+                            </td>
+                        </tr>
         
+                    </tbody>
 
-        <footer th:replace="~{layout/fragments :: footer}">
+                    <!-- Sección de tabla para crear nuevas series -->
+                    <tbody  class="text-secondary table-secondary border-secondary info-txt">
+        
+                        <tr>
+                            <form id="createGymSetForm" th:action="@{/app/season/training/exercise/gymset/create}" th:object="${gymSetForm}"  method="POST">
+                                <td >
+                                    <input type="hidden"  th:field="*{exerciseId}">
+                                    <input class="border-0 form-control-sm  w-set-input"  type="number" min="0" max="999"  step="0.1"  th:field="*{weight}">
+                                    <span>Kg</span>
+                                </td>
+                                <td >
+                                    <input class="border-0 form-control-sm  w-set-input"  type="number" min="0" max="127"  th:field="*{repetitions}">
+                                    
+                                </td >
+                                <td >
+                                    <span>x</span>
+                                    <input type="number" class="border-0 form-control-sm  w-set-input" min="0" max="127"   th:field="*{timesRepeated}">
+                                    
+                                </td >
+                                <td class="p-1 text-center">
+                                    <input type="checkbox"  th:field="*{failure}">
+                                </td>
+                                <td></td>
+                            </form>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        </footer>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <script>
-            function submitRow(index, method, url) {
-
-                //Si viene por post significa que va a crear el elemento y no tiene un orden aun
-                let setOrder = null;
-                if(method=="PUT"){
-                    setOrder = document.getElementById("setOrder_" + index).value;
-                }
-                
-
-                let exerciseId = document.getElementById("exerciseId_" + index).value;
-                let weight = document.getElementById("weight_" + index).value;
-                let repetitions = document.getElementById("repetitions_" + index).value;
-                let timesRepeated = document.getElementById("timesRepeated_" + index).value;
-                let failure = document.getElementById("failure_" + index).checked;
-
-                //Validando campos manualmente
-                if(weight < 0 || weight > 999){
-                    let errors = ["El peso debe ser mayor o igual que 0 y menor que 1000"]
-                    showErrors(errors);
-                    return;
-                }
-                if(repetitions < 0 || repetitions > 127){
-                    let errors = ["Las repeticiones deben ser mayores o igual que 0 y menores que 128"]
-                    showErrors(errors);
-                    return;
-                }
-                if(timesRepeated < 0 || timesRepeated > 127){
-                    let errors = ["El número de series debe ser mayor o igual que 0 y menor que 128"]
-                    showErrors(errors);
-                    return;
-                }
-
-                let data = {
-                    exerciseId : exerciseId,  
-                    setOrder: setOrder,
-                    weight: weight,
-                    repetitions: repetitions,
-                    timesRepeated: timesRepeated,
-                    failure: failure
-                };
-
-                
-                let csrfToken = document.querySelector('input[name="_csrf"]').value;
-            
-                fetch(url, {
-                    method: method,
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": csrfToken // Añadir el token CSRF a los headers
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => { throw err; });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Success:", data);
-                    window.location.reload();
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    // Llamar a la función para mostrar los errores en el div
-                    showErrors(error);
-                });
-            }
-
-            function showErrors(errors) {
-                let errorsDiv = document.getElementById("gymSetErrors");
-                errorsDiv.classList.add("alert", "alert-danger"); // Agrega las clases de alerta
-                errorsDiv.innerHTML = ""; // Limpia los errores anteriores
-
-                // Itera sobre los errores y crea elementos div para cada mensaje de error
-                if (Array.isArray(errors)) {
-                    errors.forEach(err => {
-                        let errorItem = document.createElement("div");
-                        errorItem.textContent = err;
-                        errorsDiv.appendChild(errorItem);
-                    });
-                } else {
-                    let errorItem = document.createElement("div");
-                    errorItem.textContent = "Ha ocurrido un error inesperado.";
-                    errorsDiv.appendChild(errorItem);
-                }
-
-                // Establece un temporizador para eliminar el estilo de alerta y limpiar los errores después de 10 segundos
-                setTimeout(function() {
-                    errorsDiv.classList.remove("alert", "alert-danger"); // Elimina las clases de alerta
-                    errorsDiv.innerHTML = ""; // Limpia los errores
-                }, 10000); // 10000 ms = 10 segundos
-            }
+            <!-- Botón para crear nuevas series, referencia a al formulario de creación de serie-->
+            <button form="createGymSetForm" class="btn btn-sm btn-success" type="submit" >
+                Añadir <i class="ms-1 fa-solid fa-plus"></i></i>
+            </button>
+        </main>
+    </div>
 
 
 
-            
 
-            
-        </script>
-    </body>
+
+
+    <!-- ====================================*Footer y scripts*========================================= -->
+    <footer th:replace="~{layout/fragments :: footer}"></footer>
+
+
+
+
+
+</body>
 </html>

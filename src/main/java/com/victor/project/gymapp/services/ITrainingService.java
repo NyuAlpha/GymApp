@@ -6,7 +6,11 @@ import org.springframework.data.domain.Pageable;
 import com.victor.project.gymapp.dto.TrainingDto;
 import com.victor.project.gymapp.models.Training;
 
-public interface ITrainingService extends CrudService {
+
+/*
+ * Interfaz de service para manipulación de entrenamientos
+ */
+public interface ITrainingService {
 
 
     Training saveTraining(TrainingDto trainingDto);
@@ -15,7 +19,7 @@ public interface ITrainingService extends CrudService {
 
     Training updateTraining(TrainingDto trainingDto);
 
-    Training getFullTrainingById(Integer id);
+    Training getTrainingById(Integer id);
 
     Page<Training> findAllTrainingsBySeasonId(Pageable pageable, Integer seasonId);
 }

@@ -5,24 +5,47 @@
 </head>
 
 <body class="container-fluid d-flex flex-column vh-100 p-0 m-0"></body>
-<!-- Cabecera -->
-<header th:replace="~{layout/fragments :: header}">
-</header>
-
-<!-- Estructura principal del cuerpo de la página -->
-<div class="flex-grow-1 d-flex">
-
-    <aside th:replace="~{layout/fragments :: aside}">
-    </aside>
 
 
-    <main class="col-md-9 col-12 p-3">
-        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+    <!-- ====================================*Encabezado*========================================= -->
+    <header th:replace="~{layout/fragments :: header}"></header>
+    
 
-            <h2>Temporadas</h2>
+
+
+    <!-- ==========================*Sección principal*=============================== -->
+    <div class="flex-grow-1 d-flex">
+            
+
+
+
+
+
+        <!-- ==========================*Aside común a la app, aparece a la izquierda*=============================== -->
+        <aside th:replace="~{layout/fragments :: aside}"></aside>
+
+
+
+
+
+        <!--============ Contenido central, el contenido de cada sección está aqui =============-->
+        <main class="col-md-9 col-12 p-3">
+
+
+            <!-- Mensajes de exito informativos van aquí -->
+            <div class="alert alert-success show-message" th:if="${success}" th:text="${success}"></div>
+
+
+            <!-- **************************************
+                 SECCIÓN DE TEMPORADAS EN TABLA              
+            **************************************** -->
+            <!-- Tabla de temporadas del usuario -->
+            <h4>Temporadas</h4>
             <div class="table-responsive">
-                <table class=" table table-sm table-bordered table-hover table-light">
-                    <thead class="table-primary">
+                <table class=" table table-sm table-bordered border-primary table-hover table-light">
+
+                    <!-- Encabezado de la tabla -->
+                    <thead class="table-primary border-primary">
                         <tr >
                             <th style="width: 20%;">Título</th>
                             <th style="width: 12%;">Inicio</th>
@@ -31,11 +54,16 @@
                             <th style="width: 5%;"></th>
                         </tr>
                     </thead>
+
+                    <!-- Cuerpo de la tabla para mostrar las temporadas -->
                     <tbody class="text-secondary info-txt">
-                        <tr th:if="${seasons.isEmpty()}"><td colspan="4">No hay entrenamientos creados aun</td></tr>
+
+                        <!-- Si no hay temporadas muestras el mensaje que coupa toda la fila -->
+                        <tr th:if="${seasons.isEmpty()}"><td colspan="5">No hay temporadas creadas aun</td></tr>
+                        <!-- Si hay temporadas se muestran, cada fila es un enlace a la temporada -->
                         <tr th:if="${!seasons.isEmpty()}" th:each="season : ${seasons}">
 
-                           
+                        
                                 <td>
                                     <a th:href="@{/app/season/} + ${season.id} + '/show'" th:text="${season.title}" class="text-decoration-none text-secondary"></a>
                                 </td>
@@ -48,6 +76,7 @@
                                 <td>
                                     <a th:href="@{/app/season/} + ${season.id} + '/show'" th:text="${season.seasonComment}" class="text-decoration-none text-secondary"></a>
                                 </td>
+                                <!-- Esta columna es para las acciones de cada temporada, enlace y botón de eliminar -->
                                 <td >
                                     <div class="d-flex">
                                         <a th:href="@{/app/season/} + ${season.id} + '/show'" class="me-1 table-mini-btn text-decoration-none">
@@ -62,26 +91,55 @@
                                         </form>
                                     </div>
                                 </td>
-                            
 
                         </tr>
                     </tbody>
                 </table>
-                <div th:if="${!seasons.isEmpty()}">
-                    <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
+            </div>
+
+            <!-- Muestra la paginación si hay temporadas en la tabla -->
+            <div th:if="${!seasons.isEmpty()}">
+                <nav th:replace="~{layout/paginator-nav :: nav}"></nav>
+            </div>
+
+
+
+
+            <!--============ Separador vacio para dividir secciones =============-->
+            <div class="vertical-separator"></div>
+            <hr>
+
+
+
+
+            <!-- **************************************
+                FORMULARIO DE CREACIÓN DE TEMPORADA              
+            **************************************** -->
+            <!-- Formulario de creación -->
+            <div class="card border-secondary card-form">
+                <h4 class="card-header">Crear Temporada</h4>
+
+                <div class="card-body">
+                    <form id="createSeasonForm" th:action="@{/app/season/create}" th:object="${season}" method="post">
+                        <!-- inyecta los campos del formulario-->
+                        <div th:replace="~{layout/forms :: seasonForm}"></div>
+                    </form>
                 </div>
+            </div>
+            <!-- Botón de creación, referencia al formulario de creación -->
+            <button class="btn btn-sm btn-success my-3" form="createSeasonForm" type="submit">
+                Añadir nueva temporada<i class="ms-2 fa-solid fa-plus"></i>
+            </button>
+        </main>
 
-            <a class="btn btn-primary btn-small" th:href="@{/app/season/create}">Nueva temporada<i
-                    class=" ms-2 fa-solid fa-plus"></i></a>
+    </div>
 
-    </main>
+    
 
-</div>
+    <!-- ====================================*Footer y scripts*========================================= -->
+    <footer th:replace="~{layout/fragments :: footer}"></footer>
 
-<!-- Pie de página -->
-<footer th:replace="~{layout/fragments :: footer}">
-
-</footer>
+    
 
 </body>
 

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https:\\www.thymeleaf.org">
+<head th:replace="~{layout/fragments :: head}">
+
+</head>
+
+<body class="container-fluid d-flex flex-column vh-100 p-0">
+
+    <!-- ====================================*Encabezado*========================================= -->
+    <header th:replace="~{layout/fragments :: header}">
+    </header>
+
+    <!-- ==========================*Sección principal*=============================== -->
+    <div class="d-flex flex-wrap  align-items-center justify-content-center">
+            <main class="pt-5">
+                <div class="card ">
+                    <div class="card-header bg-dark text-white">
+                        <span class="fs-2">
+                            <i style="font-size: 30px;" class="fas fa-exclamation-triangle"></i>
+                                 403 - Recurso no encontrado</span>
+                    </div>
+                    <div class="card-body text-center"><span>¡Vaya! La página que estás buscando no existe.</span></div>
+                </div>
+            </main>
+    </div>
+
+    <!-- ====================================*Footer y scripts*========================================= -->
+    <footer th:replace="~{layout/fragments :: footer}"></footer>
+</body>
+</html>

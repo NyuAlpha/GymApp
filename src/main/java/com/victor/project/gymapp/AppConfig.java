@@ -9,9 +9,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/*
+ * Clase principal de configuración
+ */
 @Configuration
 public class AppConfig implements WebMvcConfigurer{
 
+
+
+    
     //Configuración para que acepte métodos distintos de GET y POST ocultos en el formulario
     @Bean
     public FilterRegistrationBean<HiddenHttpMethodFilter> hiddenHttpMethodFilter() {
@@ -20,15 +26,21 @@ public class AppConfig implements WebMvcConfigurer{
         return filterRegistrationBean;
     }
 
-    // public void addViewControllers(ViewControllerRegistry registry) {
-    //     registry.addViewController("/error_403").setViewName("errors/error_403");
-	// }
 
+
+
+
+    //Este Bean es con el que se van a encriptar contraseñas
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
+
+
+
+
+    //Este bean es para configurar la ruta donde se encuentran los mensajes de validación personalizados
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
