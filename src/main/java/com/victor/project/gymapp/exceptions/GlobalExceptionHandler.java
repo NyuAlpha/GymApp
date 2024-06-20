@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public String handleAccessDeniedException(AccessDeniedException ex) {
         //Retorna la vista personalizada
-        return "/errors/403";
+        return "errors/403";
     }
 
 
@@ -30,9 +30,8 @@ public class GlobalExceptionHandler {
     //Excepción para cuando no existe una url o algún parámetro esté mal
     @ExceptionHandler({NoResourceFoundException.class, MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
     public String notFound(Exception ex) {
-        
         //Retorna la vista personalizada
-        return "/errors/404";
+        return "errors/404";
     }
 
     
@@ -56,7 +55,7 @@ public class GlobalExceptionHandler {
         model.addAttribute("stackTrace", e.getStackTrace());
 
         //vista generica para errores no especificados.
-        return "/errors/error";
+        return "errors/error";
     }
 
 

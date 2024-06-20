@@ -155,6 +155,6 @@ public class GymSetService implements IGymSetService {
         if(optionalGymSet.isPresent()){
             return optionalGymSet.get();
         }
-        return new GymSet();
+        return null;
     }
 }

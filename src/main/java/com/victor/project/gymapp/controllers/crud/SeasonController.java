@@ -40,7 +40,7 @@ import lombok.AllArgsConstructor;
  * para un usuario concreto
  */
 @Controller
-@RequestMapping({"app/season" })
+@RequestMapping({"app/season" , "/", "", "home" })
 @AllArgsConstructor
 public class SeasonController {
 
@@ -59,7 +59,7 @@ public class SeasonController {
 
 
     //Muestra la vista con la lista de temporadas paginada y un formulario para crear una temporada
-    @GetMapping(path = { "/list" })
+    @GetMapping(path = { "/list", "/", "" })
     public String getSeasonsList(Model model, @RequestParam(name = "page", defaultValue = "0") int page, HttpSession session) {
 
         //Obtiene las páginas, transforma su contenido de entidad a dto

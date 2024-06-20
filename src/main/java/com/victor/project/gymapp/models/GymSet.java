@@ -83,11 +83,11 @@ public class GymSet {
      * Se obtiene una instancia de dto de esta entidad para mandarla a las vistas
      */
     public GymSetDto getDto(){
-
+        
         //Se mapea la entidad al dto, pero antes se convierten algunos datos para mostrarlos
         Integer reps = (repetitions == null)? 0: (int)repetitions;
         BigDecimal weightInt = (weight == null)? BigDecimal.valueOf(0.0):weight;
-
+        
         GymSetDto gymSetDto = new GymSetDto(id.getExercise().getId(), id.getSetOrder(), weightInt, reps, failure,(int)timesRepeated);
         
         //Se devuelve

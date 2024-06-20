@@ -23,11 +23,11 @@ public class CustomErrorController implements ErrorController {
 
         //Obtiene el estado del error
         int statusCode = response.getStatus();
-
         //Redirigue a una vista u otra en función del estado
         if (statusCode == HttpStatus.FORBIDDEN.value()) {
             return "errors/403";
         } else if (statusCode == HttpStatus.NOT_FOUND.value()) {
+            System.out.println("Intentando lanzar vista 404 desde handler");
             return "errors/404";
         } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
             return "errors/error";
@@ -35,5 +35,6 @@ public class CustomErrorController implements ErrorController {
 
         return "errors/error";
     }
+
 
 }

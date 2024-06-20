@@ -17,7 +17,7 @@ FROM openjdk:17-jdk-slim
 EXPOSE 8080
 
 # Copiar el archivo JAR construido desde la etapa anterior
-COPY --from=build /gymapp/target/gymapp-alpha-1.0.jar /gymapp/gymapp-alpha-1.0.jar
+COPY --from=build /gymapp/target/gymapp-alpha-1.1.jar /gymapp/gymapp-alpha-1.1.jar
 
 # Establecer el punto de entrada para ejecutar la aplicación en modo producción
-ENTRYPOINT ["java", "-jar", "/gymapp/gymapp-alpha-1.0.jar"]
+ENTRYPOINT ["java", "-jar", "/gymapp/gymapp-alpha-1.1.jar"]

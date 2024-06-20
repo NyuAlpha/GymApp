@@ -104,6 +104,7 @@ public class ExerciseController {
 
 
         // Buscamos el ejercicio por id y obtenemos su dto, luego lo pasa a la vista
+        System.out.println(exerciseId);
         ExerciseDto exerciseDto = exerciseService.getExerciseById(exerciseId).getDto();
         model.addAttribute("exercise", exerciseDto);
 
@@ -117,11 +118,17 @@ public class ExerciseController {
         if(!model.containsAttribute("gymSetForm")){
             //Si no existe retorna uno vacio, si existe retorna uno identico
             GymSet lastGymSet = gymSetService.getLastGymSet(exerciseId);
-            //Se copia a dto y se le asigna el ejercicio actual
-            GymSetDto userRecordDto = lastGymSet.getDto();
-            userRecordDto.setExerciseId(exerciseId);
+            GymSetDto gymSetDto = new GymSetDto(exerciseId); //Esto evita que se le pase un gymSet vacio sin ejercicio
+            //Si existe en la base de datos, reemplaza el dto
+            if(lastGymSet != null){
+                //Se copia a dto y se le asigna el ejercicio actual
+                gymSetDto = lastGymSet.getDto();
+            }else{
+                gymSetDto = new GymSetDto(exerciseId);
+            }
             //Se envia al modelo ya sea vacio o con datos si existia una última serie
-            model.addAttribute("gymSetForm", userRecordDto);
+            model.addAttribute("gymSetForm", gymSetDto);
+            
         }
 
         //Devuelve la vista

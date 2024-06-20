@@ -3,6 +3,7 @@ package com.victor.project.gymapp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -60,8 +61,9 @@ public class AppSecurityConfig {
                 //Rutas protegidas y permitidas por diferentes roles
                 .authorizeHttpRequests(
                     (authz) -> authz
-                        .requestMatchers("/css/**", "/js/**", "/img/**", "/signin")
-                        .permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/img/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/sign_up").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/sign_up").permitAll()
                         .requestMatchers("/admin/control")
                         .hasRole("ADMIN")
                         .anyRequest().authenticated()
@@ -94,5 +96,10 @@ public class AppSecurityConfig {
                 )
                 .build();
     }
+
+
+
+
+    
         
 }
