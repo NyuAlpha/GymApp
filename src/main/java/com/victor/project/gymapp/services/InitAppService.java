@@ -18,7 +18,7 @@ import jakarta.annotation.PostConstruct;
  * Esta clase es para pruebas, su utiliza es crear usuarios y/o obtener contraseñas encriptadas.
  */
 @Component
-@Profile("dev")
+//@Profile("dev")
 public class InitAppService {
 
     @Autowired

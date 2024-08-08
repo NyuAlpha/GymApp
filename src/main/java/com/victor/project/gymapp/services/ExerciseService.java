@@ -54,16 +54,8 @@ public class ExerciseService implements IExerciseService {
         Training training = trainingRepository.findById(exerciseDto.getTrainingId()).orElseThrow(NoSuchElementException::new);
         exercise.setTraining(training);
 
-        //Se asigna el nombre, pero primero se comprueba si existe, si no existe se crea uno nuevo y se persiste
-        // antes de asignarse
-        String name = exerciseDto.getExerciseName();
-        Optional<ExerciseName> optionalExerciseName = exerciseNameRepository.findByName(name);
-        if(optionalExerciseName.isPresent()){
-            exercise.setExerciseName(optionalExerciseName.get());
-        }else{
-            ExerciseName en = exerciseNameRepository.save(new ExerciseName(name));
-            exercise.setExerciseName(en);
-        }
+        //Asignamos un nombre de ejercicio
+        asignName(exercise, exerciseDto.getExerciseName());
 
 
         //Por último, se calcula cuantos ejercicios hay en el entrenamiento para darle una posición al nuevo
@@ -114,6 +106,9 @@ public class ExerciseService implements IExerciseService {
         Exercise exercise = exerciseRepository.findById(exerciseDto.getId()).orElseThrow(NoSuchElementException::new);
         //Se actualizan sus campos mediante el dto
         exercise.update(exerciseDto);
+
+        //Reasignamos un nombre de ejercicio
+        asignName(exercise, exerciseDto.getExerciseName());
 
         return exerciseRepository.save(exercise);
     }
@@ -232,6 +227,23 @@ public class ExerciseService implements IExerciseService {
     }
 
 
+
+    /* 
+     * Se asigna el nombre, pero primero se comprueba si existe, si no existe se crea uno nuevo
+     * y se persiste antes de asignarse
+     */
+    @Transactional
+    private void asignName(Exercise exercise ,String name){
+
+        Optional<ExerciseName> optionalExerciseName = exerciseNameRepository.findByName(name);
+
+        if(optionalExerciseName.isPresent()){
+            exercise.setExerciseName(optionalExerciseName.get());
+        }else{
+            ExerciseName en = exerciseNameRepository.save(new ExerciseName(name));
+            exercise.setExerciseName(en);
+        }
+    }
 
     
 }

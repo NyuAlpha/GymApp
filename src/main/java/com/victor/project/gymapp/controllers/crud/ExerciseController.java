@@ -222,8 +222,9 @@ public class ExerciseController {
 
         // Se comprueba si el usuario es el propietario, si no lo es lanza error 403, si es, continua.
         // Se debe validar tambien el entrenamiento padre para evitar redirigir a entrenamientos ajenos
-        if (!userService.checkUserForExercise(exerciseId) || !userService.checkUserForTraining(trainingId))
+        if (!userService.checkUserForExercise(exerciseId) || !userService.checkUserForTraining(trainingId)){
             throw new AccessDeniedException("No tienes permiso para realizar esta acción");
+        }
 
         //Borra y redirecciona
         exerciseService.deleteExercise(exerciseId);

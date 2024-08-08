@@ -163,6 +163,7 @@
 
                                     <form th:action="@{/app/season/training/exercise/delete}" th:method="DELETE">
                                         <input type="hidden" name="exerciseId" id="exerciseId" th:value="${exercise.id}">
+                                        <input type="hidden" name="trainingId" id="trainingId" th:value="${trainingId}">
                                         <button onclick="return confirm('¿Estás seguro que deseas eliminar este elemento?')" class=" ms-1 table-mini-btn">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>

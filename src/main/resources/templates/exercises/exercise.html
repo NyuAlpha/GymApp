@@ -56,6 +56,11 @@
                         <span th:if="${exercise.exerciseComment}" th:text="${exercise.exerciseComment}"></span>
                     </div>
 
+                    <!-- Resumen de todas las series de un ejercicio -->
+                    <div class="alert alert-info p-1 info-txt"  >
+                        <strong>Resumen de series:</strong> <span th:text="${exercise.printGymSetFormat()}"></span>
+                    </div>
+
                     <!-- Panel de acciones editar, volver y eliminar ejercicio-->
                     <div class="d-flex mt-4">
                     
@@ -94,10 +99,6 @@
             <h4 class="mb-4" th:text="'Series de ' + ${exercise.exerciseName}"></h4>
         
 
-            <!-- Resumen de todas las series de un ejercicio -->
-            <div class="alert alert-info p-1 info-txt"  >
-                <strong>Resumen:</strong> <span th:text="${exercise.printGymSetFormat()}"></span>
-            </div>
 
 
             <!-- Sección de mensajes de error, realmenter no son formularios, si no una forma en la

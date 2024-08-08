@@ -17,7 +17,7 @@ se incorporarán en el futuro.
 - MySQL
 - Thymeleaf
 
-## Instalación
+## Instalación en local
 
 ### 1. Clonar el repositorio:
    ```bash
@@ -29,7 +29,7 @@ se incorporarán en el futuro.
 
 ### 2. Configurar base de datos:
 
-   Crea una base de datos MySql en local con la siguiente base de datos:
+   Crea una base de datos PostgreSQL en local con la siguiente base de datos:
 
       CREATE DATABASE gymapp;
 
@@ -37,11 +37,10 @@ se incorporarán en el futuro.
    la sección siguiente para que se adapte a tu base de datos
 
    ```properties
-   spring.datasource.url=jdbc:mysql://localhost:puerto/gymapp
+   spring.datasource.url=jdbc:postgresql://localhost:5432/gymapp
    spring.datasource.username=usuario
    spring.datasource.password=contraseña
    ```
-
 
 
 ### 3. Crear ejecutable:
@@ -56,11 +55,13 @@ se incorporarán en el futuro.
 
 ### 4. Ejecutar sin empaquetar:
 
-   Primera vez que se ejecuta o se desea resetear las tablas de la base de datos:
+   La primera vez que se ejecuta o se desea resetear las tablas de la base de datos, Asegurate de estar dentro de la carpeta raiz del proyecto `/gymapp`:
 
    ```bash
    ./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.jpa.hibernate.ddl-auto=create"
    ```
+   
+
 
    Una vez existen las tablas:
 
@@ -77,35 +78,25 @@ se incorporarán en el futuro.
    Una vez se crea el jar ya puedes ejecutar el proyecto, pero la primera vez que lo ejecutes debes usar:
 
    ```bash
-   java -jar target/gymapp-alpha-1.0.jar --spring.jpa.hibernate.ddl-auto=create
+   java -jar target/gymapp-alpha-1.2.jar --spring.jpa.hibernate.ddl-auto=create
    ```
 
    Eso creará las tablas de forma automática y dos usuarios, y una vez hecho, bastará con usar:
 
    ```bash
-   java -jar target/gymapp.jar
+   java -jar target/gymapp-alpha-1.2.jar
    ```
 
 
    Los usuarios creados de forma local son:
-      username = user   password = 123456
-      username = admin  password = 123456
-   aunque pueden ser modificados desde el código.
 
-
-### 6. Despliegue en producción:
-
-   Se deben especificar las variables de entorno para conectar con la base de datos:
-
-      DATABASE_URL=jdbc:mysql://production-database-url:3306/gymapp
-      DATABASE_USERNAME=prod_user
-      DATABASE_PASSWORD=prod_password
-
-   Usar el siguiente comando para ejecutarlo en producción:
-
-   ```bash
-   java -jar target/gymapp.jar --spring.profiles.active=prod
    ```
+   username = user   password = 123456
+   username = admin  password = 123456
+   ```
+      
+   Pueden ser modificados desde el código en `InitAppService`.
+
 
 
 

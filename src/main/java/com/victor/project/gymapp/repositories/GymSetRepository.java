@@ -57,8 +57,19 @@ public interface GymSetRepository extends CrudRepository<GymSet,GymSetId>{
      * Devuelve la última serie si existe, utiliza query nativo
      * para poder acceder al último en una sola consulta
      */
-    @Query("SELECT gs FROM GymSet gs WHERE gs.id.exercise.id = :exerciseId AND gs.id.setOrder = (SELECT MAX(gs2.id.setOrder) FROM GymSet gs2 WHERE gs.id.exercise.id = :exerciseId)")
+    @Query("SELECT gs FROM GymSet gs WHERE gs.id.exercise.id = :exerciseId AND gs.id.setOrder = (SELECT MAX(gs2.id.setOrder) FROM GymSet gs2 WHERE gs2.id.exercise.id = :exerciseId)")
     Optional<GymSet> findLastByExerciseId(@Param("exerciseId") Integer exerciseId);
+
+
+    /*
+     * Este método sirve para reestablecer el orden de las series cuando una es eliminada, bajando la 
+     * posición de cada serie posterior una unidad para que no queden posiciones vacias.
+     */
+    @Modifying
+    @Query("UPDATE GymSet gs SET gs.id.setOrder = gs.id.setOrder - 1 WHERE " 
+            + "gs.id.exercise.id = :exerciseId AND "
+            + "gs.id.setOrder > :setOrder")
+    void updateSetOrder(@Param("exerciseId") Integer exerciseId, @Param("setOrder") Byte setOrder);
 
 
 }

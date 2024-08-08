@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.victor.project</groupId>
 	<artifactId>gymapp</artifactId>
-	<version>alpha-1.1</version>
+	<version>alpha-1.2</version>
 	<name>gymapp</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>

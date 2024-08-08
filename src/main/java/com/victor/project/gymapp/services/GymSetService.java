@@ -39,9 +39,12 @@ public class GymSetService implements IGymSetService {
         //Crea una serie en base al dto con los campos simples
         GymSet gymSet = new GymSet(gymSetDto);
 
+        
+
         //Asigna su primary key
         //Se calcula la posición de la serie y se le asigna su entrenamiento, ya que ambos son la primary key
         Byte count = gymSetRepository.countByExerciseId(gymSetDto.getExerciseId());
+        System.out.println("count = " + count);
         Exercise exercise = exerciseRepository.findById(gymSetDto.getExerciseId()).orElseThrow(NoSuchElementException::new);
         gymSet.setId(exercise,count);//Si tiene 4, la posición del último es la 3, por eso se pone el mismo que count
 
@@ -60,7 +63,12 @@ public class GymSetService implements IGymSetService {
     @Override
     @Transactional
     public void deleteGymSet(Integer exerciseId, Byte setOrder) {
+
         gymSetRepository.deleteByExerciseIdAndSetOrder(exerciseId,setOrder);
+
+        //Ahora se debe reestablecer el orden restando 1 al setOrder de cada serie posterior a la eliminada.
+        gymSetRepository.updateSetOrder(exerciseId, setOrder);
+
     }
 
 
@@ -153,8 +161,11 @@ public class GymSetService implements IGymSetService {
 
         Optional<GymSet> optionalGymSet = gymSetRepository.findLastByExerciseId(exerciseId);
         if(optionalGymSet.isPresent()){
+            System.out.println(" El id es...." + optionalGymSet.get().getId().getSetOrder());
             return optionalGymSet.get();
         }
+        
+        System.out.println("\n\nNo encontrado...*********************************\n\n");
         return null;
     }
 }
