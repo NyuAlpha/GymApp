@@ -1,6 +1,6 @@
 # Changelog
 
-## [Alpha 1.2] - YYYY-MM-DD
+## [Alpha 1.2] - 2024-08-08
 
 ### Bugs resueltos:
 - **No se pueden modificar nombres de ejercicios**:
